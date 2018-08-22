@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.capgemini.service.BookServiceTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.047 sec - in com.capgemini.service.BookServiceTest

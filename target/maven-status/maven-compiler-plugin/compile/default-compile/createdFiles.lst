@@ -1,0 +1,15 @@
+com\capgemini\mappers\BookMapper.class
+com\capgemini\StarterKitJpaStarterApplication.class
+com\capgemini\service\BookService.class
+com\capgemini\types\AuthorTO.class
+com\capgemini\types\BookTO.class
+com\capgemini\dao\impl\BookDaoImpl.class
+com\capgemini\dao\impl\AbstractDao.class
+com\capgemini\types\AuthorTO$AuthorTOBuilder.class
+com\capgemini\domain\AuthorEntity.class
+com\capgemini\dao\BookDao.class
+com\capgemini\service\impl\BookServiceImpl.class
+com\capgemini\domain\BookEntity.class
+com\capgemini\mappers\AuthorMapper.class
+com\capgemini\types\BookTO$BookTOBuilder.class
+com\capgemini\dao\Dao.class
