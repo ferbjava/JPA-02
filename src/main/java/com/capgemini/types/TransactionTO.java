@@ -99,8 +99,6 @@ public class TransactionTO {
 		}
 		
 		public TransactionTO build(){
-			System.out.println("Data: "+date.getTime());
-			System.out.println("Status: "+status);
 			checkBeforeBuild(date, status);
 			return new TransactionTO(id, version, clientId, date, status, productsId);
 		}

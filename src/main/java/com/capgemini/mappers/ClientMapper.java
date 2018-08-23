@@ -1,6 +1,10 @@
 package com.capgemini.mappers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.capgemini.domain.ClientEntity;
+import com.capgemini.domain.TransactionEntity;
 import com.capgemini.types.ClientTO;
 import com.capgemini.types.ClientTO.ClientTOBuilder;
 
@@ -22,4 +26,10 @@ public class ClientMapper {
 				clientTO.getPhoneNumber(), clientTO.getAdress(), clientTO.getDateBirth());
 	}
 
+	public static List<Long> toClientTransactionIDs(ClientEntity entity) {
+		if (entity == null)
+			return null;
+		return entity.getTransactions().stream().map(TransactionEntity::getId).collect(Collectors.toList());
+	}
+	
 }

@@ -16,9 +16,9 @@ import com.capgemini.types.ProductTO.ProductTOBuilder;
  * Provides following data:
  * <p>
  * <p>
- * - 3 ClientTO,
+ * - 3 ClientTO's,
  * <p>
- * - 3 ProductTO,
+ * - 4 ProductTO's,
  * <p>
  * and getters to each TO's by 'id'.
  * 
@@ -65,6 +65,8 @@ public class TestData {
 				.withMargin(15).withWeigth(new BigDecimal("9.99")).build());
 		this.products.add(new ProductTOBuilder().withName("dynks").withUnitPrice(new BigDecimal("123.45"))
 				.withMargin(50).withWeigth(new BigDecimal("1.5")).build());
+		this.products.add(new ProductTOBuilder().withName("Golden Rolex").withUnitPrice(new BigDecimal("100000.0"))
+				.withMargin(12).withWeigth(new BigDecimal("0.2")).build());
 	}
 
 }

@@ -15,6 +15,8 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capgemini.exceptions.HighPrizeException;
+import com.capgemini.exceptions.TransactionHistoryException;
 import com.capgemini.mappers.ProductMapper;
 import com.capgemini.types.ClientTO;
 import com.capgemini.types.ProductTO;
@@ -25,40 +27,40 @@ import com.capgemini.utils.TestData;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ClientServiceTest {
-	
+
 	@Autowired
 	private ClientService clientService;
-	
+
 	@Autowired
 	private ProductService productService;
-	
+
 	@Test
 	@Transactional
-	public void shouldAddClient(){
+	public void shouldAddClient() {
 		// given
 		TestData data = new TestData();
 		data.initialize();
-		
+
 		final long EXPECTED_INITIAL_CLIENTS = 0;
 		final long EXPECTED_FINAL_CLIENTS = 1;
-		
+
 		long initialClients = clientService.findClientsNo();
 		// when
 		clientService.save(data.getClientById(0));
 		long finalClients = clientService.findClientsNo();
-		
+
 		// then
 		assertEquals(EXPECTED_INITIAL_CLIENTS, initialClients);
 		assertEquals(EXPECTED_FINAL_CLIENTS, finalClients);
 	}
-	
+
 	@Test
 	@Transactional
-	public void shouldFailOptimisticLocking(){
+	public void shouldFailOptimisticLocking() {
 		// given
 		TestData data = new TestData();
 		data.initialize();
-		
+
 		final long EXPECTED_INITIAL_CLIENTS = 0;
 		final long EXPECTED_FINAL_CLIENTS = 1;
 		long initialClients = clientService.findClientsNo();
@@ -70,18 +72,18 @@ public class ClientServiceTest {
 		int version01_01 = selectedClient01_01.getVersion();
 		int version01_02 = selectedClient01_02.getVersion();
 		// when
-//		selectedClient01_01.setFirstName("Jarogniew");
+		// selectedClient01_01.setFirstName("Jarogniew");
 		ClientTO updatedClient01_01 = clientService.save(selectedClient01_01);
 		long clientsAfterUpdate = clientService.findClientsNo();
-		int versionUpdated01_01 = updatedClient01_01.getVersion();
-		
+		updatedClient01_01.getVersion();
+
 		boolean isException = false;
-		try{
+		try {
 			clientService.save(selectedClient01_02);
-		}catch (OptimisticLockingFailureException ex){
+		} catch (OptimisticLockingFailureException ex) {
 			isException = true;
 		}
-		
+
 		// then
 		assertEquals(EXPECTED_INITIAL_CLIENTS, initialClients);
 		assertEquals(EXPECTED_FINAL_CLIENTS, finalClients);
@@ -89,7 +91,7 @@ public class ClientServiceTest {
 		assertEquals(version01_01, version01_02);
 		assertTrue(isException);
 	}
-	
+
 	@Test
 	@Transactional
 	public void shouldAddTransactionToClient() {
@@ -117,7 +119,7 @@ public class ClientServiceTest {
 		assertEquals(EXPECTED_INITIAL_TRANSACTIONS, initialTransactions);
 		assertEquals(EXPECTED_FINAL_TRANSACTIONS, finalTransactions);
 	}
-	
+
 	@Test
 	@Transactional
 	public void shouldRemoveClientCascadeTest() {
@@ -137,12 +139,12 @@ public class ClientServiceTest {
 		productsList.add(savedProduct01);
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
 		ClientTO savedClient02 = clientService.save(data.getClientById(1));
-		
+
 		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
 				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList))
 				.withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
-		
+
 		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient02.getId())
 				.withDate(new GregorianCalendar(2018, 7, 23)).withProductsIds(ProductMapper.map2TOsId(productsList))
 				.withStatus("Completed").build();
@@ -154,7 +156,7 @@ public class ClientServiceTest {
 
 		// when
 		clientService.removeClient(savedClient01.getId());
-		
+
 		long finalProductsNo = productService.findProductsNo();
 		long finalClientsNo = clientService.findClientsNo();
 		long finalTransactionsNo = clientService.findTransactionsNo();
@@ -167,5 +169,102 @@ public class ClientServiceTest {
 		assertEquals(EXPECTED_INITIAL_TRANSACTIONS, initalTransactionsNo);
 		assertEquals(EXPECTED_FINAL_TRANSACTIONS, finalTransactionsNo);
 	}
-	
+
+	@Test
+	@Transactional
+	public void shouldPerformInvalidTransaction6ExpensiveItems() {
+		// given
+		TestData data = new TestData();
+		data.initialize();
+
+		ProductTO savedProduct01 = productService.save(data.getProductById(0));
+		ProductTO savedProduct02 = productService.save(data.getProductById(3));
+		
+		List<ProductTO> productsList01 = new ArrayList<>();
+		productsList01.add(savedProduct01);
+		List<ProductTO> productsList02 = new ArrayList<>();
+		productsList02.add(savedProduct01);
+		List<ProductTO> productsList03 = new ArrayList<>();
+		productsList03.add(savedProduct01);
+		List<ProductTO> productsList04 = new ArrayList<>();
+		productsList04.add(savedProduct01);
+		productsList04.add(savedProduct02);
+		productsList04.add(savedProduct02);
+		productsList04.add(savedProduct02);
+		productsList04.add(savedProduct02);
+		productsList04.add(savedProduct02);
+		productsList04.add(savedProduct02);
+		ClientTO savedClient01 = clientService.save(data.getClientById(0));
+
+		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList01))
+				.withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
+
+		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList02))
+				.withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
+
+		TransactionTO transaction03 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList03))
+				.withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
+		
+		TransactionTO transaction04 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList04))
+				.withStatus("Completed").build();
+
+		// when
+		boolean isException = false;
+		try {
+			clientService.addTransactionToClient(savedClient01.getId(), transaction04);
+		} catch (HighPrizeException ex) {
+			isException = true;
+		}
+
+		// then
+		assertTrue(isException);
+	}
+
+	@Test
+	@Transactional
+	public void shouldPerformInvalidTransactionSecondPurchaseExpensive() {
+		// given
+		TestData data = new TestData();
+		data.initialize();
+
+		ProductTO savedProduct01 = productService.save(data.getProductById(0));
+		ProductTO savedProduct02 = productService.save(data.getProductById(1));
+		ProductTO savedProduct03 = productService.save(data.getProductById(3));
+		List<ProductTO> productsList01 = new ArrayList<>();
+		productsList01.add(savedProduct01);
+		productsList01.add(savedProduct02);
+		List<ProductTO> productsList02 = new ArrayList<>();
+		productsList02.add(savedProduct01);
+		productsList02.add(savedProduct03);
+		ClientTO savedClient01 = clientService.save(data.getClientById(0));
+		
+		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 7, 21)).withProductsIds(ProductMapper.map2TOsId(productsList01))
+				.withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
+		
+		long clientTransactions = clientService.findClientTransactionsNo(savedClient01.getId());
+
+		// when
+		boolean isException = false;
+		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList02))
+				.withStatus("Completed").build();
+		try {
+			clientService.addTransactionToClient(savedClient01.getId(), transaction02);
+		} catch (TransactionHistoryException ex) {
+			isException = true;
+		}
+
+		// then
+		assertTrue(isException);
+	}
+
 }
