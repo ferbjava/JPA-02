@@ -9,9 +9,10 @@ public class ClientMapper {
 	public static ClientTO toClientTO(ClientEntity entity) {
 		if (entity == null)
 			return null;
-		return new ClientTOBuilder().withId(entity.getId()).withFirstName(entity.getFirstName())
+		return new ClientTOBuilder().withId(entity.getId()).withVersion(entity.getVersion()).withFirstName(entity.getFirstName())
 				.withLastName(entity.getLastName()).withEmail(entity.getEmail())
-				.withPhoneNumber(entity.getPhoneNumber()).withDateBirth(entity.getDateBirth()).build();
+				.withPhoneNumber(entity.getPhoneNumber()).withAdress(entity.getAdress()).withDateBirth(entity.getDateBirth())
+				.withTransactionsId(TransactionMapper.map2TOsId(entity.getTransactions())).build();
 	}
 
 	public static ClientEntity toClientEntity(ClientTO clientTO) {

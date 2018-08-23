@@ -1,39 +1,53 @@
 package com.capgemini.types;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class ClientTO {
 
 	private Long id;
+	private int version;
 	private String firstName;
 	private String lastName;
 	private String email;
 	private Integer phoneNumber;
 	private String adress;
 	private Calendar dateBirth;
+	private List<Long> transactionsId = new ArrayList<>();
 
 	public ClientTO() {
 		super();
 	}
 
-	public ClientTO(Long id, String firstName, String lastName, String email, Integer phoneNumber, String adress,
-			Calendar dateBirth) {
+	public ClientTO(Long id, int version, String firstName, String lastName, String email, Integer phoneNumber, String adress,
+			Calendar dateBirth, List<Long> transactionsId) {
 		super();
 		this.id = id;
+		this.version = version;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.adress = adress;
 		this.dateBirth = dateBirth;
+		this.transactionsId = transactionsId;
 	}
 
 	public Long getId() {
 		return id;
 	}
 
+	public int getVersion() {
+		return version;
+	}
+
 	public String getFirstName() {
 		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName=firstName;
 	}
 
 	public String getLastName() {
@@ -56,6 +70,10 @@ public class ClientTO {
 		return dateBirth;
 	}
 
+	public List<Long> getTransactionsId() {
+		return transactionsId;
+	}
+
 	public ClientTOBuilder builder() {
 		return new ClientTOBuilder();
 	}
@@ -63,12 +81,14 @@ public class ClientTO {
 	public static class ClientTOBuilder {
 
 		private Long id;
+		private int version;
 		private String firstName;
 		private String lastName;
 		private String email;
 		private Integer phoneNumber;
 		private String adress;
 		private Calendar dateBirth;
+		private List<Long> transactionsId = new ArrayList<>();
 
 		public ClientTOBuilder() {
 			super();
@@ -76,6 +96,11 @@ public class ClientTO {
 
 		public ClientTOBuilder withId(Long id) {
 			this.id = id;
+			return this;
+		}
+
+		public ClientTOBuilder withVersion(int version) {
+			this.version = version;
 			return this;
 		}
 
@@ -108,10 +133,15 @@ public class ClientTO {
 			this.dateBirth = dateBirth;
 			return this;
 		}
+
+		public ClientTOBuilder withTransactionsId(List<Long> transactionsId) {
+			this.transactionsId = transactionsId;
+			return this;
+		}
 		
 		public ClientTO build(){
 			checkBeforeBuild(firstName, lastName, email, phoneNumber, adress, dateBirth);
-			return new ClientTO(id, firstName, lastName, email, phoneNumber, adress, dateBirth);
+			return new ClientTO(id, version, firstName, lastName, email, phoneNumber, adress, dateBirth, transactionsId);
 		}
 
 		private void checkBeforeBuild(String firstName, String lastName, String email, Integer phoneNumber,

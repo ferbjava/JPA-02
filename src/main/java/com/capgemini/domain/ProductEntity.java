@@ -1,6 +1,7 @@
 package com.capgemini.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,39 +21,39 @@ public class ProductEntity extends AbstractEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable = false, length = 45)
-	private String productName;
+	private String name;
 	@Column(nullable = true)
-	private Double unitPrice;
+	private BigDecimal unitPrice;
 	@Column(nullable = false)
 	private Integer margin;
 	@Column(nullable = false)
-	private Double weigth;
+	private BigDecimal weigth;
 
 	// for hibernate
 	public ProductEntity() {
 	}
 
-	public ProductEntity(Long id, String productName, Double unitPrice, Integer margin, Double weigth) {
+	public ProductEntity(Long id, String name, BigDecimal unitPrice, Integer margin, BigDecimal weigth) {
 		super(id);
-		this.productName = productName;
+		this.name = name;
 		this.unitPrice = unitPrice;
 		this.margin = margin;
 		this.weigth = weigth;
 	}
 
-	public String getProductName() {
-		return productName;
+	public String getName() {
+		return name;
 	}
 
-	public void setProductName(String productName) {
-		this.productName = productName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public Double getUnitPrice() {
+	public BigDecimal getUnitPrice() {
 		return unitPrice;
 	}
 
-	public void setUnitPrice(Double unitPrice) {
+	public void setUnitPrice(BigDecimal unitPrice) {
 		this.unitPrice = unitPrice;
 	}
 
@@ -64,11 +65,11 @@ public class ProductEntity extends AbstractEntity implements Serializable {
 		this.margin = margin;
 	}
 
-	public Double getWeigth() {
+	public BigDecimal getWeigth() {
 		return weigth;
 	}
 
-	public void setWeigth(Double weigth) {
+	public void setWeigth(BigDecimal weigth) {
 		this.weigth = weigth;
 	}
 

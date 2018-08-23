@@ -1,13 +1,18 @@
 package com.capgemini.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.capgemini.listeners.CreateListener;
@@ -32,9 +37,23 @@ public class ClientEntity extends AbstractEntity implements Serializable {
 	private String adress;
 	@Column(nullable = false)
 	private Calendar dateBirth;
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<TransactionEntity> transactions = new ArrayList<>();
 
 	// for hibernate
 	public ClientEntity() {
+	}
+	
+	public ClientEntity(Long id, String firstName, String lastName, String email, Integer phoneNumber, String adress,
+			Calendar dateBirth, List<TransactionEntity> transactions) {
+		super(id);
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.adress = adress;
+		this.dateBirth = dateBirth;
+		this.transactions = transactions;
 	}
 	
 	public ClientEntity(Long id, String firstName, String lastName, String email, Integer phoneNumber, String adress,
@@ -94,6 +113,18 @@ public class ClientEntity extends AbstractEntity implements Serializable {
 
 	public void setDateBirth(Calendar dateBirth) {
 		this.dateBirth = dateBirth;
+	}
+
+	public List<TransactionEntity> getTransactions() {
+		return transactions;
+	}
+
+	public void setTransactions(List<TransactionEntity> transactions) {
+		this.transactions = transactions;
+	}
+
+	public void addTransaction(TransactionEntity transaction) {
+		this.transactions.add(transaction);
 	}
 
 }
