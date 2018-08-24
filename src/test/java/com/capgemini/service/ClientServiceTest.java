@@ -72,10 +72,11 @@ public class ClientServiceTest {
 		int version01_01 = selectedClient01_01.getVersion();
 		int version01_02 = selectedClient01_02.getVersion();
 		// when
-		// selectedClient01_01.setFirstName("Jarogniew");
+		selectedClient01_01.setFirstName("Jarogniew");
+		selectedClient01_02.setFirstName("Adam");
 		ClientTO updatedClient01_01 = clientService.save(selectedClient01_01);
 		long clientsAfterUpdate = clientService.findClientsNo();
-		updatedClient01_01.getVersion();
+		int updatedVersion01_01 = updatedClient01_01.getVersion();
 
 		boolean isException = false;
 		try {
@@ -89,6 +90,7 @@ public class ClientServiceTest {
 		assertEquals(EXPECTED_FINAL_CLIENTS, finalClients);
 		assertEquals(EXPECTED_FINAL_CLIENTS, clientsAfterUpdate);
 		assertEquals(version01_01, version01_02);
+//		assertFalse(version01_01 == updatedVersion01_01);
 		assertTrue(isException);
 	}
 
@@ -249,8 +251,6 @@ public class ClientServiceTest {
 				.withDate(new GregorianCalendar(2018, 7, 21)).withProductsIds(ProductMapper.map2TOsId(productsList01))
 				.withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
-		
-		long clientTransactions = clientService.findClientTransactionsNo(savedClient01.getId());
 
 		// when
 		boolean isException = false;

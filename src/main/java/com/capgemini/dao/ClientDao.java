@@ -9,4 +9,7 @@ import com.capgemini.domain.ClientEntity;
 public interface ClientDao extends CrudRepository<ClientEntity, Long> {
 
 	ClientEntity findById(Long id);
+	
+//	@Query("SELECT SUM(t) FROM ClientEntity c HAVING ")
+//	BigDecimal totalPrizeTransactionByClient(Long id);
 }
