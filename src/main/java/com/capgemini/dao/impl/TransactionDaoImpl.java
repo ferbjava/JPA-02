@@ -10,7 +10,7 @@ public class TransactionDaoImpl extends AbstractDao<TransactionEntity, Long> imp
 
 	@Override
 	public List<TransactionEntity> findByCriteria(TransactionSearchCriteriaTO criteria) {
-		
+		/*TODO*/
 		return null;
 	}
 

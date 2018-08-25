@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Implementation-Title: starter-kit-jpa-starter
 Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: mkotecki
+Built-By: MKOTECKI
 Implementation-Vendor-Id: com.capgemini
 Build-Jdk: 1.8.0_66
 Implementation-URL: http://projects.spring.io/spring-boot/JPA-02/

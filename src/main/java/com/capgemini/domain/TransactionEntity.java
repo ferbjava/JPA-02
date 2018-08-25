@@ -37,8 +37,8 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 	private String status;
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinTable(name = "TRANSACTION_PRODUCT", joinColumns = {
-			@JoinColumn(name = "TRANSACTION_ID", nullable = false) }, inverseJoinColumns = {
-			@JoinColumn(name = "PRODUCT_ID", nullable = false) })
+			@JoinColumn(name = "TRANSACTION_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
+			@JoinColumn(name = "PRODUCT_ID", nullable = false, updatable = false) })
 	private List<ProductEntity> products = new ArrayList<>();
 
 	// for hibernate

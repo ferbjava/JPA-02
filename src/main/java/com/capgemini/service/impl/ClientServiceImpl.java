@@ -17,12 +17,15 @@ import com.capgemini.dao.ProductDao;
 import com.capgemini.dao.TransactionDao;
 import com.capgemini.domain.ClientEntity;
 import com.capgemini.domain.ProductEntity;
+import com.capgemini.domain.TransactionEntity;
 import com.capgemini.exceptions.HighPrizeException;
 import com.capgemini.exceptions.TransactionHistoryException;
 import com.capgemini.mappers.ClientMapper;
+import com.capgemini.mappers.ProductMapper;
 import com.capgemini.mappers.TransactionMapper;
 import com.capgemini.service.ClientService;
 import com.capgemini.types.ClientTO;
+import com.capgemini.types.ProductTO;
 import com.capgemini.types.TransactionTO;
 import com.capgemini.types.TransactionTO.TransactionTOBuilder;
 
@@ -71,8 +74,14 @@ public class ClientServiceImpl implements ClientService {
 		verifyTransaction(clientId, transaction);
 		List<TransactionTO> transactions = verifyWeigth(transaction);
 		ClientEntity clientEntity = clientDao.findById(clientId);
-		for (TransactionTO veryfiedTransaction : transactions) {
-			clientEntity.addTransaction(TransactionMapper.toTransactionEntity(veryfiedTransaction));
+		for (TransactionTO veryfiedTransactionTO : transactions) {
+			TransactionEntity veryfiedTransaction = TransactionMapper.toTransactionEntity(veryfiedTransactionTO);
+			veryfiedTransaction.setClient(clientEntity);
+			List<ProductEntity> products = veryfiedTransactionTO.getProductsId().stream().map(productDao::findById)
+					.collect(Collectors.toList());
+			veryfiedTransaction.setProducts(products);
+			TransactionEntity savedTransaction = transactionDao.save(veryfiedTransaction);
+			clientEntity.addTransaction(savedTransaction);
 		}
 		ClientEntity updatedClient = clientDao.save(clientEntity);
 		return ClientMapper.toClientTO(updatedClient);
@@ -133,22 +142,25 @@ public class ClientServiceImpl implements ClientService {
 	private List<TransactionTO> verifyWeigth(TransactionTO transaction) {
 		List<Long> productsId = transaction.getProductsId();
 		List<TransactionTO> verifiedTransactions = new ArrayList<>();
-		List<Long> temporaryProductsId = new ArrayList<>();
+		List<ProductTO> temporaryProducts = new ArrayList<>();
 		Double tempTransactionWeight = 0.0;
-		Iterator<Long> selectedProductId = productsId.iterator();
-		while (selectedProductId.hasNext()) {
-			ProductEntity selectedProduct = productDao.findById(selectedProductId.next());
-			if (tempTransactionWeight + selectedProduct.getWeigth().doubleValue() > MAX_TRANSACTION_PRODUCTS_WEIGHT
-					|| !selectedProductId.hasNext()) {
+		Iterator<Long> selectedProductIterator = productsId.iterator();
+		while (selectedProductIterator.hasNext()) {
+			Long selectedProductId = selectedProductIterator.next();
+			ProductEntity selectedProduct = productDao.findById(selectedProductId);
+			if (tempTransactionWeight < MAX_TRANSACTION_PRODUCTS_WEIGHT && selectedProductIterator.hasNext()) {
+				temporaryProducts.add(ProductMapper.toProductTO(selectedProduct));
+				tempTransactionWeight += selectedProduct.getWeigth().doubleValue();
+			} else {
+				if (!selectedProductIterator.hasNext()) {
+					temporaryProducts.add(ProductMapper.toProductTO(selectedProduct));
+				}
 				TransactionTO temporaryTransaction = new TransactionTOBuilder().withClientId(transaction.getClientId())
 						.withDate(transaction.getDate()).withStatus(transaction.getStatus())
-						.withProductsIds(temporaryProductsId).build();
+						.withProductsIds(ProductMapper.map2TOsId(temporaryProducts)).build();
 				verifiedTransactions.add(temporaryTransaction);
-				temporaryProductsId.clear();
+				temporaryProducts.clear();
 				tempTransactionWeight = 0.0;
-			} else {
-				temporaryProductsId.add(selectedProductId.next());
-				tempTransactionWeight += selectedProduct.getWeigth().doubleValue();
 			}
 		}
 		return verifiedTransactions;

@@ -74,9 +74,8 @@ public class ClientServiceTest {
 		// when
 		selectedClient01_01.setFirstName("Jarogniew");
 		selectedClient01_02.setFirstName("Adam");
-		ClientTO updatedClient01_01 = clientService.save(selectedClient01_01);
+		clientService.save(selectedClient01_01);
 		long clientsAfterUpdate = clientService.findClientsNo();
-		int updatedVersion01_01 = updatedClient01_01.getVersion();
 
 		boolean isException = false;
 		try {
@@ -90,7 +89,6 @@ public class ClientServiceTest {
 		assertEquals(EXPECTED_FINAL_CLIENTS, finalClients);
 		assertEquals(EXPECTED_FINAL_CLIENTS, clientsAfterUpdate);
 		assertEquals(version01_01, version01_02);
-//		assertFalse(version01_01 == updatedVersion01_01);
 		assertTrue(isException);
 	}
 
@@ -181,9 +179,11 @@ public class ClientServiceTest {
 
 		ProductTO savedProduct01 = productService.save(data.getProductById(0));
 		ProductTO savedProduct02 = productService.save(data.getProductById(3));
+		ProductTO savedProduct03 = productService.save(data.getProductById(1));
 		
 		List<ProductTO> productsList01 = new ArrayList<>();
 		productsList01.add(savedProduct01);
+		productsList01.add(savedProduct03);
 		List<ProductTO> productsList02 = new ArrayList<>();
 		productsList02.add(savedProduct01);
 		List<ProductTO> productsList03 = new ArrayList<>();
