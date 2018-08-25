@@ -2,12 +2,17 @@ package com.capgemini.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import com.capgemini.listeners.CreateListener;
@@ -23,20 +28,35 @@ public class ProductEntity extends AbstractEntity implements Serializable {
 	@Column(nullable = false, length = 45)
 	private String name;
 	@Column(nullable = true)
-	private BigDecimal unitPrice;
+	private BigDecimal price;
 	@Column(nullable = false)
 	private Integer margin;
 	@Column(nullable = false)
 	private BigDecimal weigth;
+	@ManyToMany
+	@JoinTable(name = "TRANSACTION_PRODUCT", joinColumns = {
+			@JoinColumn(name = "PRODUCT_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
+			@JoinColumn(name = "TRANSACTION_ID", nullable = false, updatable = false) })
+	private
+	List<TransactionEntity> transactions = new ArrayList<>();
 
 	// for hibernate
 	public ProductEntity() {
 	}
 
-	public ProductEntity(Long id, String name, BigDecimal unitPrice, Integer margin, BigDecimal weigth) {
+	public ProductEntity(Long id, String name, BigDecimal price, Integer margin, BigDecimal weigth, List<TransactionEntity> transactions) {
 		super(id);
 		this.name = name;
-		this.unitPrice = unitPrice;
+		this.price = price;
+		this.margin = margin;
+		this.weigth = weigth;
+		this.transactions = transactions;
+	}
+
+	public ProductEntity(Long id, String name, BigDecimal price, Integer margin, BigDecimal weigth) {
+		super(id);
+		this.name = name;
+		this.price = price;
 		this.margin = margin;
 		this.weigth = weigth;
 	}
@@ -49,12 +69,12 @@ public class ProductEntity extends AbstractEntity implements Serializable {
 		this.name = name;
 	}
 
-	public BigDecimal getUnitPrice() {
-		return unitPrice;
+	public BigDecimal getPrice() {
+		return price;
 	}
 
-	public void setUnitPrice(BigDecimal unitPrice) {
-		this.unitPrice = unitPrice;
+	public void setPrice(BigDecimal price) {
+		this.price = price;
 	}
 
 	public Integer getMargin() {
@@ -71,6 +91,18 @@ public class ProductEntity extends AbstractEntity implements Serializable {
 
 	public void setWeigth(BigDecimal weigth) {
 		this.weigth = weigth;
+	}
+
+	public List<TransactionEntity> getTransactions() {
+		return transactions;
+	}
+
+	public void setTransactions(List<TransactionEntity> transactions) {
+		this.transactions = transactions;
+	}
+
+	public void addTransaction(TransactionEntity transaction) {
+		this.transactions.add(transaction);
 	}
 
 }

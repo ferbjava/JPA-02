@@ -1,28 +1,32 @@
 package com.capgemini.types;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductTO {
 	
 	private Long id;
 	private int version;
 	private String name;
-	private BigDecimal unitPrice;
+	private BigDecimal price;
 	private Integer margin;
 	private BigDecimal weigth;
+	private List<Long> transactionsId = new ArrayList<>();
 	
 	public ProductTO() {
 		super();
 	}
 
-	public ProductTO(Long id, int version, String name, BigDecimal unitPrice, Integer margin, BigDecimal weigth) {
+	public ProductTO(Long id, int version, String name, BigDecimal price, Integer margin, BigDecimal weigth, List<Long> transactionsId) {
 		super();
 		this.id = id;
 		this.version =version;
 		this.name = name;
-		this.unitPrice = unitPrice;
+		this.price = price;
 		this.margin = margin;
 		this.weigth = weigth;
+		this.transactionsId = transactionsId;
 	}
 
 	public Long getId() {
@@ -37,8 +41,8 @@ public class ProductTO {
 		return name;
 	}
 
-	public BigDecimal getUnitPrice() {
-		return unitPrice;
+	public BigDecimal getPrice() {
+		return price;
 	}
 
 	public Integer getMargin() {
@@ -47,6 +51,10 @@ public class ProductTO {
 
 	public BigDecimal getWeigth() {
 		return weigth;
+	}
+
+	public List<Long> getTransactionsId() {
+		return transactionsId;
 	}
 	
 	public ProductTOBuilder builder(){
@@ -58,9 +66,10 @@ public class ProductTO {
 		private Long id;
 		private int version;
 		private String name;
-		private BigDecimal unitPrice;
+		private BigDecimal price;
 		private Integer margin;
 		private BigDecimal weigth;
+		private List<Long> transactionsId = new ArrayList<>();
 		
 		public ProductTOBuilder() {
 			super();
@@ -81,8 +90,8 @@ public class ProductTO {
 			return this;
 		}
 		
-		public ProductTOBuilder withUnitPrice(BigDecimal unitPrice){
-			this.unitPrice = unitPrice;
+		public ProductTOBuilder withPrice(BigDecimal price){
+			this.price = price;
 			return this;
 		}
 		
@@ -96,19 +105,24 @@ public class ProductTO {
 			return this;
 		}
 		
+		public ProductTOBuilder withTransactiosId(List<Long> transactionsId){
+			this.transactionsId = transactionsId;
+			return this;
+		}
+		
 		public ProductTO build(){
-			checkBeforeBuild(name, unitPrice, margin, weigth);
-			return new ProductTO(id, version, name, unitPrice, margin, weigth);
+			checkBeforeBuild(name, price, margin, weigth);
+			return new ProductTO(id, version, name, price, margin, weigth, transactionsId);
 		}
 
-		private void checkBeforeBuild(String name, BigDecimal unitPrice, Integer margin, BigDecimal weigth) {
+		private void checkBeforeBuild(String name, BigDecimal price, Integer margin, BigDecimal weigth) {
 			boolean isName = false;
 			if (name != null && !name.isEmpty()) {
 				isName = true;
 			}
-			boolean isUnitPrice = false;
-			if (unitPrice != null) {
-				isUnitPrice = true;
+			boolean isPrice = false;
+			if (price != null) {
+				isPrice = true;
 			}
 			boolean isMargin = false;
 			if (margin != null) {
@@ -118,7 +132,7 @@ public class ProductTO {
 			if (weigth != null) {
 				isWeigth = true;
 			}
-			if (!isName || !isUnitPrice || !isMargin || !isWeigth) {
+			if (!isName || !isPrice || !isMargin || !isWeigth) {
 				throw new RuntimeException("Incorrect 'Product' to be created");
 			}
 		}

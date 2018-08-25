@@ -79,7 +79,8 @@ public class ClientServiceImpl implements ClientService {
 			veryfiedTransaction.setClient(clientEntity);
 			List<ProductEntity> products = veryfiedTransactionTO.getProductsId().stream().map(productDao::findById)
 					.collect(Collectors.toList());
-			veryfiedTransaction.setProducts(products);
+			veryfiedTransaction.addProducts(products);
+			products.stream().forEach(p -> p.addTransaction(veryfiedTransaction));
 			TransactionEntity savedTransaction = transactionDao.save(veryfiedTransaction);
 			clientEntity.addTransaction(savedTransaction);
 		}
@@ -104,6 +105,11 @@ public class ClientServiceImpl implements ClientService {
 		return transactionDao.count();
 	}
 
+	@Override
+	public BigDecimal findCostOfTransactionsByClient(Long id) {
+		return transactionDao.findCostOfTransactionsByClient(id);
+	}
+
 	// private methods
 	private void verifyTransaction(Long clientId, TransactionTO transaction) {
 		if (verifyIfBelow3Transactions(clientId, transaction)) {
@@ -118,7 +124,7 @@ public class ClientServiceImpl implements ClientService {
 		List<Long> productList = transaction.getProductsId();
 		BigDecimal totalPrize = new BigDecimal("0.0");
 		for (Long i : productList) {
-			totalPrize = totalPrize.add(productDao.findById(i).getUnitPrice());
+			totalPrize = totalPrize.add(productDao.findById(i).getPrice());
 		}
 		if (findClientTransactionsNo(clientId) < MIN_TRANSACTIONS_TO_BUY_OVER_MAX_TOTAL_COST
 				&& totalPrize.compareTo(MAX_TOTAL_COST_BELOW_3_TRANSATIONS) == 1) {
@@ -132,7 +138,7 @@ public class ClientServiceImpl implements ClientService {
 		Set<Long> productsSet = productsList.stream().collect(Collectors.toSet());
 		for (Long i : productsSet) {
 			if (Collections.frequency(productsList, i) > MAX_EXPENSIVE_PRODUCTS
-					&& productDao.findById(i).getUnitPrice().compareTo(MAX_PRIZE_FOR_EXPENSIVE_PRODUCTS) == 1) {
+					&& productDao.findById(i).getPrice().compareTo(MAX_PRIZE_FOR_EXPENSIVE_PRODUCTS) == 1) {
 				return true;
 			}
 		}
@@ -161,6 +167,8 @@ public class ClientServiceImpl implements ClientService {
 				verifiedTransactions.add(temporaryTransaction);
 				temporaryProducts.clear();
 				tempTransactionWeight = 0.0;
+				temporaryProducts.add(ProductMapper.toProductTO(selectedProduct));
+				tempTransactionWeight += selectedProduct.getWeigth().doubleValue();
 			}
 		}
 		return verifiedTransactions;

@@ -12,12 +12,9 @@ import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
 
 import com.capgemini.listeners.CreateListener;
 import com.capgemini.listeners.UpdateListener;
@@ -35,10 +32,7 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 	private Calendar date;
 	@Column(nullable = true)
 	private String status;
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-	@JoinTable(name = "TRANSACTION_PRODUCT", joinColumns = {
-			@JoinColumn(name = "TRANSACTION_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
-			@JoinColumn(name = "PRODUCT_ID", nullable = false, updatable = false) })
+	@ManyToMany(mappedBy = "transactions", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	private List<ProductEntity> products = new ArrayList<>();
 
 	// for hibernate
@@ -66,7 +60,7 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 	public void setClient(ClientEntity client) {
 		this.client = client;
 	}
-	
+
 	public Calendar getDate() {
 		return date;
 	}
@@ -91,8 +85,12 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 		this.products = products;
 	}
 
+	public void addProducts(List<ProductEntity> products) {
+		this.products.addAll(products);
+	}
+
 	public void addProduct(ProductEntity product) {
 		this.products.add(product);
 	}
-	
+
 }

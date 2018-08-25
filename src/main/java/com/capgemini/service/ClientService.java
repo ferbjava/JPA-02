@@ -1,5 +1,7 @@
 package com.capgemini.service;
 
+import java.math.BigDecimal;
+
 import com.capgemini.types.ClientTO;
 import com.capgemini.types.TransactionTO;
 
@@ -14,5 +16,6 @@ public interface ClientService {
 	long findTransactionsNo();
 	
 	void removeClient(Long id);
+	BigDecimal findCostOfTransactionsByClient(Long id);
 	
 }

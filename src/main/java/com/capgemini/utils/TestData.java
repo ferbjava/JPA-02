@@ -16,9 +16,9 @@ import com.capgemini.types.ProductTO.ProductTOBuilder;
  * Provides following data:
  * <p>
  * <p>
- * - 3 ClientTO's,
+ * - 3 ClientTO's (indexes 0-2),
  * <p>
- * - 4 ProductTO's,
+ * - 12 ProductTO's (indexes 0-12),
  * <p>
  * and getters to each TO's by 'id'.
  * 
@@ -59,14 +59,30 @@ public class TestData {
 	}
 
 	private void fillProductsList() {
-		this.products.add(new ProductTOBuilder().withName("wihajster").withUnitPrice(new BigDecimal("450.50"))
+		this.products.add(new ProductTOBuilder().withName("wihajster").withPrice(new BigDecimal("450.50"))
 				.withMargin(32).withWeigth(new BigDecimal("12.5")).build());
-		this.products.add(new ProductTOBuilder().withName("ajzol").withUnitPrice(new BigDecimal("888.88"))
+		this.products.add(new ProductTOBuilder().withName("ajzol").withPrice(new BigDecimal("888.88"))
 				.withMargin(15).withWeigth(new BigDecimal("9.99")).build());
-		this.products.add(new ProductTOBuilder().withName("dynks").withUnitPrice(new BigDecimal("123.45"))
+		this.products.add(new ProductTOBuilder().withName("dynks").withPrice(new BigDecimal("123.45"))
 				.withMargin(50).withWeigth(new BigDecimal("1.5")).build());
-		this.products.add(new ProductTOBuilder().withName("Golden Rolex").withUnitPrice(new BigDecimal("100000.0"))
+		this.products.add(new ProductTOBuilder().withName("Golden Rolex").withPrice(new BigDecimal("100000.00"))
 				.withMargin(12).withWeigth(new BigDecimal("0.2")).build());
+		this.products.add(new ProductTOBuilder().withName("Glock 17 gen 5").withPrice(new BigDecimal("2400.00"))
+				.withMargin(23).withWeigth(new BigDecimal("0.7")).build());
+		this.products.add(new ProductTOBuilder().withName("CZ SP-01 Shadow").withPrice(new BigDecimal("2950.00"))
+				.withMargin(25).withWeigth(new BigDecimal("1.3")).build());
+		this.products.add(new ProductTOBuilder().withName("CZ P09").withPrice(new BigDecimal("1900.00"))
+				.withMargin(26).withWeigth(new BigDecimal("0.75")).build());
+		this.products.add(new ProductTOBuilder().withName("CZ P07 Kadet 0.22").withPrice(new BigDecimal("1950.00"))
+				.withMargin(38).withWeigth(new BigDecimal("0.74")).build());
+		this.products.add(new ProductTOBuilder().withName("H&K USP").withPrice(new BigDecimal("3000.00"))
+				.withMargin(30).withWeigth(new BigDecimal("0.67")).build());
+		this.products.add(new ProductTOBuilder().withName("Sig Sauer 1911 0.22").withPrice(new BigDecimal("1650.00"))
+				.withMargin(35).withWeigth(new BigDecimal("0.8")).build());
+		this.products.add(new ProductTOBuilder().withName("Chiappa 1911 0.22").withPrice(new BigDecimal("1500.00"))
+				.withMargin(45).withWeigth(new BigDecimal("0.82")).build());
+		this.products.add(new ProductTOBuilder().withName("GSG FireFly 0.22").withPrice(new BigDecimal("1050.00"))
+				.withMargin(32).withWeigth(new BigDecimal("0.73")).build());
 	}
 
 }
