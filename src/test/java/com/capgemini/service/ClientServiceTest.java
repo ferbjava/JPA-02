@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -95,7 +96,7 @@ public class ClientServiceTest {
 
 	@Test
 	@Transactional
-	public void shouldAddTransactionToClient() {
+	public void shouldAddTransactionToClient() throws Exception {
 		// given
 		TestData data = new TestData();
 		data.initialize();
@@ -110,9 +111,8 @@ public class ClientServiceTest {
 		long initialTransactions = clientService.findClientTransactionsNo(savedClient01.getId());
 
 		// when
-		TransactionTO transaction = new TransactionTOBuilder()//.withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 23)).withProductsIds(ProductMapper.map2TOsId(productsList))
-				.withStatus("Completed").build();
+		TransactionTO transaction = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 23))
+				.withProductsIds(ProductMapper.map2TOsId(productsList)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction);
 		long finalTransactions = clientService.findClientTransactionsNo(savedClient01.getId());
 
@@ -123,7 +123,7 @@ public class ClientServiceTest {
 
 	@Test
 	@Transactional
-	public void shouldRemoveClientCascadeTest() {
+	public void shouldRemoveClientCascadeTest() throws Exception {
 		// given
 		TestData data = new TestData();
 		data.initialize();
@@ -173,7 +173,7 @@ public class ClientServiceTest {
 
 	@Test
 	@Transactional
-	public void shouldPerformInvalidTransaction6ExpensiveItems() {
+	public void shouldPerformInvalidTransaction6ExpensiveItems() throws Exception {
 		// given
 		TestData data = new TestData();
 		data.initialize();
@@ -232,7 +232,7 @@ public class ClientServiceTest {
 
 	@Test
 	@Transactional
-	public void shouldPerformInvalidTransactionSecondPurchaseExpensive() {
+	public void shouldPerformInvalidTransactionSecondPurchaseExpensive() throws Exception {
 		// given
 		TestData data = new TestData();
 		data.initialize();
@@ -270,11 +270,11 @@ public class ClientServiceTest {
 
 	@Test
 	@Transactional
-	public void shouldReturnClientTransaction() {
+	public void shouldReturnClientTransactioncCost() throws Exception {
 		// given
 		TestData data = new TestData();
 		data.initialize();
-		BigDecimal EXPECTED_COST = new BigDecimal("0.0");
+		BigDecimal EXPECTED_COST = new BigDecimal("2240.38");
 
 		ProductTO savedProduct01 = productService.save(data.getProductById(0));
 		ProductTO savedProduct02 = productService.save(data.getProductById(1));
@@ -304,8 +304,51 @@ public class ClientServiceTest {
 		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
 
 		// when
-		System.out.println("------------------test----------------");
 		BigDecimal cost = clientService.findCostOfTransactionsByClient(savedClient01.getId());
+
+		// then
+		assertEquals(EXPECTED_COST, cost);
+	}
+
+	@Test
+	@Transactional
+	public void shouldReturnProfitByPeriod() throws Exception {
+		// given
+		TestData data = new TestData();
+		data.initialize();
+		BigDecimal EXPECTED_COST = new BigDecimal("2240.38");
+
+		ProductTO savedProduct01 = productService.save(data.getProductById(0));
+		ProductTO savedProduct02 = productService.save(data.getProductById(1));
+		Calendar startPeriod = new GregorianCalendar(2018, 6, 1);
+		Calendar endPeriod = new GregorianCalendar(2018, 7, 1);
+		
+		List<ProductTO> productsList01 = new ArrayList<>();
+		productsList01.add(savedProduct01);
+		productsList01.add(savedProduct02);
+		List<ProductTO> productsList02 = new ArrayList<>();
+		productsList02.add(savedProduct01);
+		List<ProductTO> productsList03 = new ArrayList<>();
+		productsList03.add(savedProduct01);
+		ClientTO savedClient01 = clientService.save(data.getClientById(0));
+
+		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 0, 1)).withProductsIds(ProductMapper.map2TOsId(productsList01))
+				.withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
+
+		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 6, 12)).withProductsIds(ProductMapper.map2TOsId(productsList02))
+				.withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
+
+		TransactionTO transaction03 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+				.withDate(new GregorianCalendar(2018, 7, 29)).withProductsIds(ProductMapper.map2TOsId(productsList03))
+				.withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
+
+		// when
+		BigDecimal cost = clientService.findProfitByPeriod(startPeriod, endPeriod);
 
 		// then
 		assertEquals(EXPECTED_COST, cost);

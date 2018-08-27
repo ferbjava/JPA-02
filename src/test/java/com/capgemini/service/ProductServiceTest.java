@@ -1,7 +1,6 @@
 package com.capgemini.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -54,14 +53,20 @@ public class ProductServiceTest {
 	
 	@Test
 	@Transactional
-	public void shouldFind10BestSellingProducts(){
+	public void shouldFind10BestSellingProducts() throws Exception {
 		// given
 		TestData data = new TestData();
 		data.initialize();
-		final int EXPECTED_RETURN_PRODUCTS = 3;
+		final int EXPECTED_RETURN_PRODUCTS = 10;
+		final Long EXPECTED_1_BESTSELLER_ID = new Long(1);
+		final Long EXPECTED_2_BESTSELLER_ID = new Long(2);
+		final Long EXPECTED_3_BESTSELLER_ID = new Long(3);
+		final Long EXPECTED_4_BESTSELLER_ID = new Long(9);
+		final Long EXPECTED_5_BESTSELLER_ID = new Long(5);
+		final Long EXPECTED_6_BESTSELLER_ID = new Long(6);
 		
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
-		ClientTO savedClient02 = clientService.save(data.getClientById(1));
+		clientService.save(data.getClientById(1));
 		
 		ProductTO savedProduct01 = productService.save(data.getProductById(0));
 		ProductTO savedProduct02 = productService.save(data.getProductById(1));
@@ -74,7 +79,7 @@ public class ProductServiceTest {
 		ProductTO savedProduct09 = productService.save(data.getProductById(8));
 		ProductTO savedProduct10 = productService.save(data.getProductById(9));
 		ProductTO savedProduct11 = productService.save(data.getProductById(10));
-		ProductTO savedProduct12 = productService.save(data.getProductById(11));
+		productService.save(data.getProductById(11));
 		
 		List<ProductTO> productsList01 = new ArrayList<>();
 		productsList01.add(savedProduct01);
@@ -139,6 +144,12 @@ public class ProductServiceTest {
 		
 		// then
 		assertEquals(EXPECTED_RETURN_PRODUCTS, bestSellingProducts.size());
+		assertEquals(EXPECTED_1_BESTSELLER_ID, bestSellingProducts.get(0).getId());
+		assertEquals(EXPECTED_2_BESTSELLER_ID, bestSellingProducts.get(1).getId());
+		assertEquals(EXPECTED_3_BESTSELLER_ID, bestSellingProducts.get(2).getId());
+		assertEquals(EXPECTED_4_BESTSELLER_ID, bestSellingProducts.get(3).getId());
+		assertEquals(EXPECTED_5_BESTSELLER_ID, bestSellingProducts.get(4).getId());
+		assertEquals(EXPECTED_6_BESTSELLER_ID, bestSellingProducts.get(5).getId());
 	}
 	
 }

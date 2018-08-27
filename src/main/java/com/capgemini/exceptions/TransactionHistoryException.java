@@ -2,7 +2,8 @@ package com.capgemini.exceptions;
 
 import java.math.BigDecimal;
 
-public class TransactionHistoryException extends RuntimeException {
+//public class TransactionHistoryException extends RuntimeException {
+public class TransactionHistoryException extends Exception {
 
 	/**
 	 * 

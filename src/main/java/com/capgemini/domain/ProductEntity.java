@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -33,10 +31,7 @@ public class ProductEntity extends AbstractEntity implements Serializable {
 	private Integer margin;
 	@Column(nullable = false)
 	private BigDecimal weigth;
-	@ManyToMany
-	@JoinTable(name = "TRANSACTION_PRODUCT", joinColumns = {
-			@JoinColumn(name = "PRODUCT_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
-			@JoinColumn(name = "TRANSACTION_ID", nullable = false, updatable = false) })
+	@ManyToMany(mappedBy = "products")
 	private
 	List<TransactionEntity> transactions = new ArrayList<>();
 

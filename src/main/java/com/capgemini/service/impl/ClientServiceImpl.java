@@ -2,6 +2,7 @@ package com.capgemini.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -70,7 +71,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
-	public ClientTO addTransactionToClient(Long clientId, TransactionTO transaction) {
+	public ClientTO addTransactionToClient(Long clientId, TransactionTO transaction) throws TransactionHistoryException, HighPrizeException {
 		verifyTransaction(clientId, transaction);
 		List<TransactionTO> transactions = verifyWeigth(transaction);
 		ClientEntity clientEntity = clientDao.findById(clientId);
@@ -80,7 +81,6 @@ public class ClientServiceImpl implements ClientService {
 			List<ProductEntity> products = veryfiedTransactionTO.getProductsId().stream().map(productDao::findById)
 					.collect(Collectors.toList());
 			veryfiedTransaction.addProducts(products);
-			products.stream().forEach(p -> p.addTransaction(veryfiedTransaction));
 			TransactionEntity savedTransaction = transactionDao.save(veryfiedTransaction);
 			clientEntity.addTransaction(savedTransaction);
 		}
@@ -107,11 +107,17 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public BigDecimal findCostOfTransactionsByClient(Long id) {
-		return transactionDao.findCostOfTransactionsByClient(id);
+		return transactionDao.findTransactionsCostByClient(id);
+	}
+
+	@Override
+	public BigDecimal findProfitByPeriod(Calendar startPeriod, Calendar endPeriod) {
+		// TODO Auto-generated method stub
+		return transactionDao.findProfitByPeriod(startPeriod, endPeriod);
 	}
 
 	// private methods
-	private void verifyTransaction(Long clientId, TransactionTO transaction) {
+	private void verifyTransaction(Long clientId, TransactionTO transaction) throws TransactionHistoryException, HighPrizeException {
 		if (verifyIfBelow3Transactions(clientId, transaction)) {
 			throw new TransactionHistoryException();
 		}

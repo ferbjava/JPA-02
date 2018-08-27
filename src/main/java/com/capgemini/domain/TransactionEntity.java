@@ -12,6 +12,8 @@ import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -32,7 +34,10 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 	private Calendar date;
 	@Column(nullable = true)
 	private String status;
-	@ManyToMany(mappedBy = "transactions", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@JoinTable(name = "TRANSACTION_PRODUCT", joinColumns = {
+			@JoinColumn(name = "TRANSACTION_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
+			@JoinColumn(name = "PRODUCT_ID", nullable = false, updatable = false) })
 	private List<ProductEntity> products = new ArrayList<>();
 
 	// for hibernate

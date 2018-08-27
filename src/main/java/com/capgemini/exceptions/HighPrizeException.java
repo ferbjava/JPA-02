@@ -1,6 +1,7 @@
 package com.capgemini.exceptions;
 
-public class HighPrizeException extends RuntimeException {
+//public class HighPrizeException extends RuntimeException {
+public class HighPrizeException extends Exception {
 
 	/**
 	 * 

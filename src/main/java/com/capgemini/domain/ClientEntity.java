@@ -37,7 +37,7 @@ public class ClientEntity extends AbstractEntity implements Serializable {
 	private String adress;
 	@Column(nullable = false)
 	private Calendar dateBirth;
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private List<TransactionEntity> transactions = new ArrayList<>();
 
 	// for hibernate
