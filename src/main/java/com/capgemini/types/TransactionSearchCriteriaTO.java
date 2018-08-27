@@ -1,39 +1,74 @@
 package com.capgemini.types;
 
+import java.math.BigDecimal;
+import java.util.Calendar;
+
 public class TransactionSearchCriteriaTO {
 
-	private Long carId;
-	private Long departmentId;
-	private Long positionId;
-
-	public TransactionSearchCriteriaTO(Long carId, Long departmentId, Long positionId) {
-		this.setCarId(carId);
-		this.setDepartmentId(departmentId);
-		this.setPositionId(positionId);
+	private String lastName;
+	private Calendar startDate;
+	private Calendar endDate;
+	private Long productId;
+	private BigDecimal lowerCost;
+	private BigDecimal upperCost;
+	
+	public TransactionSearchCriteriaTO(String lastName, Calendar startDate, Calendar endDate, Long productId,
+			BigDecimal lowerCost, BigDecimal upperCost) {
+		super();
+		this.lastName = lastName;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.productId = productId;
+		this.lowerCost = lowerCost;
+		this.upperCost = upperCost;
 	}
 
-	public Long getCarId() {
-		return carId;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setCarId(Long carId) {
-		this.carId = carId;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
-	public Long getDepartmentId() {
-		return departmentId;
+	public Calendar getStartDate() {
+		return startDate;
 	}
 
-	public void setDepartmentId(Long departmentId) {
-		this.departmentId = departmentId;
+	public void setStartDate(Calendar startDate) {
+		this.startDate = startDate;
 	}
 
-	public Long getPositionId() {
-		return positionId;
+	public Calendar getEndDate() {
+		return endDate;
 	}
 
-	public void setPositionId(Long positionId) {
-		this.positionId = positionId;
+	public void setEndDate(Calendar endDate) {
+		this.endDate = endDate;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public BigDecimal getLowerCost() {
+		return lowerCost;
+	}
+
+	public void setLowerCost(BigDecimal lowerCost) {
+		this.lowerCost = lowerCost;
+	}
+
+	public BigDecimal getUpperCost() {
+		return upperCost;
+	}
+
+	public void setUpperCost(BigDecimal upperCost) {
+		this.upperCost = upperCost;
 	}
 
 }

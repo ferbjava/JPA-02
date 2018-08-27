@@ -5,7 +5,9 @@ import java.time.YearMonth;
 import java.util.List;
 
 import com.capgemini.domain.ClientEntity;
+import com.capgemini.domain.TransactionEntity;
 import com.capgemini.types.ClientTO;
+import com.capgemini.types.TransactionSearchCriteriaTO;
 import com.capgemini.types.TransactionTO;
 
 public interface ClientService {
@@ -26,5 +28,6 @@ public interface ClientService {
 	BigDecimal findTotalCostByStatus(String status);
 	
 	List<ClientEntity> find3ClientsWithMostExpensiveShoppings(YearMonth startDate, YearMonth endDate);
+	List<TransactionEntity> findTransactionsByCriteria(TransactionSearchCriteriaTO criteria);
 	
 }

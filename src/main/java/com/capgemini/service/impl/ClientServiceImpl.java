@@ -27,6 +27,7 @@ import com.capgemini.mappers.TransactionMapper;
 import com.capgemini.service.ClientService;
 import com.capgemini.types.ClientTO;
 import com.capgemini.types.ProductTO;
+import com.capgemini.types.TransactionSearchCriteriaTO;
 import com.capgemini.types.TransactionTO;
 import com.capgemini.types.TransactionTO.TransactionTOBuilder;
 
@@ -128,6 +129,11 @@ public class ClientServiceImpl implements ClientService {
 	@Override
 	public BigDecimal findTotalCostByStatus(String status) {
 		return transactionDao.findTotalCostByStatus(status);
+	}
+
+	@Override
+	public List<TransactionEntity> findTransactionsByCriteria(TransactionSearchCriteriaTO criteria) {
+		return transactionDao.findByCriteria(criteria);
 	}
 
 	// private methods

@@ -1,0 +1,4 @@
+com\capgemini\service\ProductServiceTest.class
+com\capgemini\service\ClientServiceTest.class
+com\capgemini\service\ServiceTestSuite.class
+com\capgemini\AllTests.class

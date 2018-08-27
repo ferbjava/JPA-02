@@ -2,6 +2,7 @@ package com.capgemini.dao.impl;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -12,14 +13,49 @@ import com.capgemini.domain.QProductEntity;
 import com.capgemini.domain.QTransactionEntity;
 import com.capgemini.domain.TransactionEntity;
 import com.capgemini.types.TransactionSearchCriteriaTO;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 public class TransactionDaoImpl extends AbstractDao<TransactionEntity, Long> implements CustomTransactionDao {
 
 	@Override
 	public List<TransactionEntity> findByCriteria(TransactionSearchCriteriaTO criteria) {
-		// TODO Auto-generated method stub
-		return null;
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		JPAQueryFactory queryPrice = new JPAQueryFactory(entityManager);
+		QTransactionEntity transaction = QTransactionEntity.transactionEntity;
+		QProductEntity product = QProductEntity.productEntity;
+		QClientEntity client = QClientEntity.clientEntity;
+		List<TransactionEntity> transactionsByTotalPrice = new ArrayList<>();
+		
+		
+		if(!criteria.getLastName().equals(null)){
+			
+		}
+		
+		List<Tuple> tupleByPrice = queryPrice.select(transaction, product.price.sum())
+					.from(transaction)
+					.join(transaction.products,product)
+					.groupBy(transaction.id)
+					.having(product.price.sum().between(criteria.getLowerCost(), criteria.getUpperCost()))
+					.fetch();
+		for(Tuple t:tupleByPrice){
+			transactionsByTotalPrice.add(t.get(transaction));
+		}
+		
+		
+		List<TransactionEntity> transactions = queryFactory.select(transaction)
+					.from(transaction)
+					.join(transaction.products,product)
+					.join(transaction.client, client)
+					.where(transaction.date.between(criteria.getStartDate(), criteria.getEndDate())
+							.and(product.id.eq(criteria.getProductId()))
+							.and(client.lastName.eq(criteria.getLastName())
+							.and(transaction.in(transactionsByTotalPrice)))
+					)
+					.groupBy(transaction.id)
+					.fetch();
+		
+		return transactions;
 	}
 
 	@Override
