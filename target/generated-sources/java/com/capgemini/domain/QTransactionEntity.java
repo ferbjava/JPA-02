@@ -34,6 +34,8 @@ public class QTransactionEntity extends EntityPathBase<TransactionEntity> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
+    public final NumberPath<Long> items = createNumber("items", Long.class);
+
     public final ListPath<ProductEntity, QProductEntity> products = this.<ProductEntity, QProductEntity>createList("products", ProductEntity.class, QProductEntity.class, PathInits.DIRECT2);
 
     public final StringPath status = createString("status");

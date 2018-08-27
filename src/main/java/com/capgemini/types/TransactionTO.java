@@ -11,6 +11,7 @@ public class TransactionTO {
 	private Long clientId;
 	private Calendar date;
 	private String status;
+	private Long items;
 	private List<Long> productsId = new ArrayList<>();
 	
 	public TransactionTO() {
@@ -25,6 +26,7 @@ public class TransactionTO {
 		this.date = date;
 		this.status = status;
 		this.productsId = productsId;
+		this.items = new Long (productsId.size());
 	}
 
 	public Long getId() {
@@ -54,6 +56,10 @@ public class TransactionTO {
 	public List<Long> getProductsId() {
 		return productsId;
 	}
+
+	public Long getItems() {
+		return items;
+	}
 	
 	public TransactionTOBuilder builder(){
 		return new TransactionTOBuilder();
@@ -67,6 +73,7 @@ public class TransactionTO {
 		private Calendar date;
 		private String status;
 		private List<Long> productsId = new ArrayList<>();
+		private Long items;
 		
 		public TransactionTOBuilder() {
 			super();
@@ -99,6 +106,7 @@ public class TransactionTO {
 		
 		public TransactionTOBuilder withProductsIds(List<Long> productsId){
 			this.productsId = productsId;
+			this.items = new Long (productsId.size());
 			return this;
 		}
 		

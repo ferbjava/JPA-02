@@ -32,12 +32,14 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 	private ClientEntity client;
 	@Column(nullable = false)
 	private Calendar date;
-	@Column(nullable = true)
+	@Column(nullable = true, length = 45)
 	private String status;
+	@Column(nullable = true)
+	private Long items;
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinTable(name = "TRANSACTION_PRODUCT", joinColumns = {
-			@JoinColumn(name = "TRANSACTION_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
-			@JoinColumn(name = "PRODUCT_ID", nullable = false, updatable = false) })
+			@JoinColumn(name = "TRANSACTION_ID", nullable = false) }, inverseJoinColumns = {
+			@JoinColumn(name = "PRODUCT_ID", nullable = false) })
 	private List<ProductEntity> products = new ArrayList<>();
 
 	// for hibernate
@@ -48,6 +50,7 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 		super(id);
 		this.date = date;
 		this.status = status;
+		this.items = new Long(0);
 	}
 
 	public ClientEntity getClient() {
@@ -80,14 +83,25 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 
 	public void setProducts(List<ProductEntity> products) {
 		this.products = products;
+		this.items = new Long (products.size());
+	}
+
+	public Long getItems() {
+		return items;
+	}
+
+	public void setItems(Long items) {
+		this.items = items;
 	}
 
 	public void addProducts(List<ProductEntity> products) {
 		this.products.addAll(products);
+		this.items+= products.size();
 	}
 
 	public void addProduct(ProductEntity product) {
 		this.products.add(product);
+		this.items++;
 	}
 
 }
