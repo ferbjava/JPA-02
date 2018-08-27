@@ -1,6 +1,7 @@
 package com.capgemini.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capgemini.mappers.ProductMapper;
 import com.capgemini.types.ClientTO;
 import com.capgemini.types.ProductTO;
+import com.capgemini.types.SelectedProductTO;
 import com.capgemini.types.TransactionTO;
 import com.capgemini.types.TransactionTO.TransactionTOBuilder;
 import com.capgemini.utils.TestData;
@@ -150,6 +152,64 @@ public class ProductServiceTest {
 		assertEquals(EXPECTED_4_BESTSELLER_ID, bestSellingProducts.get(3).getId());
 		assertEquals(EXPECTED_5_BESTSELLER_ID, bestSellingProducts.get(4).getId());
 		assertEquals(EXPECTED_6_BESTSELLER_ID, bestSellingProducts.get(5).getId());
+	}
+
+	@Test
+	@Transactional
+	public void shouldReturnProductsInImplementation() throws Exception {
+		// given
+		TestData data = new TestData();
+		data.initialize();
+		
+		final int EXPECTED_PRODUCT_NO = 3;
+		final Long EXPECTED_PRODUCT01_NO = new Long(2);
+		final Long EXPECTED_PRODUCT02_NO = new Long(1);
+		final Long EXPECTED_PRODUCT03_NO = new Long(1);
+		final String STATUS_IN_IMPLEMENTATION = "In implementation";
+
+		ProductTO savedProduct01 = productService.save(data.getProductById(0));
+		ProductTO savedProduct02 = productService.save(data.getProductById(1));
+		ProductTO savedProduct03 = productService.save(data.getProductById(2));
+		
+		List<ProductTO> productsList01 = new ArrayList<>();
+		productsList01.add(savedProduct01);
+		productsList01.add(savedProduct02);
+		productsList01.add(savedProduct03);
+		List<ProductTO> productsList02 = new ArrayList<>();
+		productsList02.add(savedProduct01);
+		productsList02.add(savedProduct02);
+		List<ProductTO> productsList03 = new ArrayList<>();
+		productsList03.add(savedProduct01);
+		productsList03.add(savedProduct03);
+		ClientTO savedClient01 = clientService.save(data.getClientById(0));
+		
+		final SelectedProductTO product01 = new SelectedProductTO(savedProduct01.getName(), EXPECTED_PRODUCT01_NO);
+		final SelectedProductTO product02 = new SelectedProductTO(savedProduct02.getName(), EXPECTED_PRODUCT02_NO);
+		final SelectedProductTO product03 = new SelectedProductTO(savedProduct03.getName(), EXPECTED_PRODUCT03_NO);
+
+		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 0, 1))
+				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
+
+		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 6, 12))
+				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus(STATUS_IN_IMPLEMENTATION).build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
+
+		TransactionTO transaction03 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 29))
+				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus(STATUS_IN_IMPLEMENTATION).build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
+
+		// when
+		List<SelectedProductTO> selectedProducts = productService.findProductsInImplementation();
+
+		// then
+		assertEquals(EXPECTED_PRODUCT_NO, selectedProducts.size());
+		assertTrue(selectedProducts.contains(product01));
+		assertTrue(selectedProducts.contains(product02));
+		assertTrue(selectedProducts.contains(product03));
+		assertEquals(selectedProducts.get(0).getAmount(), product01.getAmount());
+		assertEquals(selectedProducts.get(1).getAmount(), product02.getAmount());
+		assertEquals(selectedProducts.get(2).getAmount(), product03.getAmount());
 	}
 	
 }

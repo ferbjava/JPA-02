@@ -283,7 +283,11 @@ public class ClientServiceTest {
 		productsList02.add(savedProduct01);
 		List<ProductTO> productsList03 = new ArrayList<>();
 		productsList03.add(savedProduct01);
+		List<ProductTO> productsList04 = new ArrayList<>();
+		productsList04.add(savedProduct01);
+		
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
+		ClientTO savedClient02 = clientService.save(data.getClientById(1));
 
 		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
 				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus("Completed").build();
@@ -296,6 +300,10 @@ public class ClientServiceTest {
 		TransactionTO transaction03 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
 				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
+
+		TransactionTO transaction04 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList04)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient02.getId(), transaction04);
 
 		// when
 		BigDecimal cost = clientService.findCostOfTransactionsByClient(savedClient01.getId());
@@ -351,14 +359,16 @@ public class ClientServiceTest {
 
 	@Test
 	@Transactional
-	public void should3ClientsWithMostExpensiveShoppings() throws Exception {
+	public void shouldReturn3ClientsWithMostExpensiveShoppings() throws Exception {
 		// given
 		TestData data = new TestData();
 		data.initialize();
 		
-		final int EXPECTED_CLIENTS_NO = 3;
 		final YearMonth START_DATE = YearMonth.of(2018, 6);
-		final YearMonth END_DATE = YearMonth.of(2018, 7);
+		final YearMonth END_DATE = YearMonth.of(2018, 8);
+		final Long EXPECTED_01_CLIENT_ID = new Long(1);
+		final Long EXPECTED_02_CLIENT_ID = new Long(3);
+		final Long EXPECTED_03_CLIENT_ID = new Long(2);
 
 		ProductTO savedProduct01 = productService.save(data.getProductById(0));
 		ProductTO savedProduct02 = productService.save(data.getProductById(1));
@@ -394,7 +404,7 @@ public class ClientServiceTest {
 				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient02.getId(), transaction03);
 
-		TransactionTO transaction04 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 0, 1))
+		TransactionTO transaction04 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 6, 1))
 				.withProductsIds(ProductMapper.map2TOsId(productsList04)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient03.getId(), transaction04);
 
@@ -406,7 +416,10 @@ public class ClientServiceTest {
 		List<ClientEntity> selectedClients = clientService.find3ClientsWithMostExpensiveShoppings(START_DATE, END_DATE);
 
 		// then
-		assertEquals(selectedClients.size(), EXPECTED_CLIENTS_NO);
+		assertTrue(!selectedClients.isEmpty());
+		assertEquals(EXPECTED_01_CLIENT_ID, selectedClients.get(0).getId());
+		assertEquals(EXPECTED_02_CLIENT_ID, selectedClients.get(1).getId());
+		assertEquals(EXPECTED_03_CLIENT_ID, selectedClients.get(2).getId());
 	}
 
 }

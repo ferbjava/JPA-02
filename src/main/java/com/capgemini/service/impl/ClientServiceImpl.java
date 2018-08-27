@@ -118,7 +118,6 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public List<ClientEntity> find3ClientsWithMostExpensiveShoppings(YearMonth startDate, YearMonth endDate) {
-		
 		return clientDao.find3ClientsWithMostExpensiveShoppings(startDate, endDate);
 	}
 
