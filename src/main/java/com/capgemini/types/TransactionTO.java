@@ -47,6 +47,10 @@ public class TransactionTO {
 		return status;
 	}
 
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public List<Long> getProductsId() {
 		return productsId;
 	}

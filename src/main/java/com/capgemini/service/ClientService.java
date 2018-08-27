@@ -15,6 +15,8 @@ public interface ClientService {
 	ClientTO findClientById(Long id);
 	ClientTO save(ClientTO clientTO);
 	ClientTO addTransactionToClient(Long clientId, TransactionTO transaction) throws Exception;
+	TransactionTO findTransactionById(Long id);
+	TransactionTO saveTransaction(Long clientId, TransactionTO transactionTO);
 	
 	long findClientsNo();
 	long findClientTransactionsNo(Long id);

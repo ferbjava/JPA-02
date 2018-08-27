@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +52,26 @@ public class ProductServiceTest {
 		// then
 		assertEquals(EXPECTED_INITIAL_PRODUCTS, initalProducts);
 		assertEquals(EXPECTED_FINAL_PRODUCTS, finalProducts);
+	}
+	
+	@Test(expected = OptimisticLockingFailureException.class)
+	@Transactional
+	public void shouldFailProductOptimisticLocking(){
+		// given
+		TestData data = new TestData();
+		data.initialize();
+		
+		ProductTO savedProduct = productService.save(data.getProductById(0));
+		ProductTO selectedProduct01_01 = productService.findById(savedProduct.getId());
+		ProductTO selectedProduct01_02 = productService.findById(savedProduct.getId());
+		
+		// when
+		selectedProduct01_01.setName("Biokukla");
+		selectedProduct01_02.setName("Wakuola");
+		
+		productService.save(selectedProduct01_01);
+		productService.findProductsNo();
+		productService.save(selectedProduct01_02);
 	}
 	
 	@Test

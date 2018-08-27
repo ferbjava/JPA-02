@@ -72,6 +72,24 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
+	public TransactionTO findTransactionById(Long id) {
+		TransactionEntity entity = transactionDao.findById(id);
+		return TransactionMapper.toTransactionTO(entity);
+	}
+
+	@Override
+	public TransactionTO saveTransaction(Long clientId, TransactionTO transactionTO) {
+		TransactionEntity entity = TransactionMapper.toTransactionEntity(transactionTO);
+		ClientEntity clientEntity = clientDao.findById(clientId);
+		entity.setClient(clientEntity);
+		for(Long i : transactionTO.getProductsId()){
+			entity.addProduct(productDao.findById(i));
+		}
+		TransactionEntity savedEntity = transactionDao.save(entity);
+		return TransactionMapper.toTransactionTO(savedEntity);
+	}
+
+	@Override
 	public ClientTO addTransactionToClient(Long clientId, TransactionTO transaction) throws TransactionHistoryException, HighPrizeException {
 		verifyTransaction(clientId, transaction);
 		List<TransactionTO> transactions = verifyWeigth(transaction);

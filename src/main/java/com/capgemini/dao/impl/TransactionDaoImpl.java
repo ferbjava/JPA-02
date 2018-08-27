@@ -13,6 +13,7 @@ import com.capgemini.domain.QProductEntity;
 import com.capgemini.domain.QTransactionEntity;
 import com.capgemini.domain.TransactionEntity;
 import com.capgemini.types.TransactionSearchCriteriaTO;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -27,33 +28,57 @@ public class TransactionDaoImpl extends AbstractDao<TransactionEntity, Long> imp
 		QClientEntity client = QClientEntity.clientEntity;
 		List<TransactionEntity> transactionsByTotalPrice = new ArrayList<>();
 		
+		BooleanBuilder options = new BooleanBuilder();
 		
-		if(!criteria.getLastName().equals(null)){
-			
+		if(criteria.getLastName()==null&&criteria.getProductId()==null&&criteria.getStartDate()==null&&criteria.getEndDate()==null&&criteria.getLowerCost()==null&&criteria.getUpperCost()==null){
+			return new ArrayList<>();
 		}
 		
-		List<Tuple> tupleByPrice = queryPrice.select(transaction, product.price.sum())
+		if (criteria.getLastName() != null) {
+			options.and(client.lastName.eq(criteria.getLastName()));
+		}
+
+		if (criteria.getProductId() != null) {
+			options.and(product.id.eq(criteria.getProductId()));
+		}
+
+		if (criteria.getStartDate() != null && criteria.getEndDate() != null) {
+			options.and(transaction.date.between(criteria.getStartDate(), criteria.getEndDate()));
+		}
+		
+		if (criteria.getLowerCost() != null && criteria.getUpperCost() != null) {
+			List<Tuple> tupleByPrice = queryPrice.select(transaction, product.price.sum())
 					.from(transaction)
 					.join(transaction.products,product)
 					.groupBy(transaction.id)
 					.having(product.price.sum().between(criteria.getLowerCost(), criteria.getUpperCost()))
 					.fetch();
-		for(Tuple t:tupleByPrice){
-			transactionsByTotalPrice.add(t.get(transaction));
+			for(Tuple t:tupleByPrice){
+				transactionsByTotalPrice.add(t.get(transaction));
+			}
+			options.and(transaction.in(transactionsByTotalPrice));
 		}
 		
-		
 		List<TransactionEntity> transactions = queryFactory.select(transaction)
-					.from(transaction)
-					.join(transaction.products,product)
-					.join(transaction.client, client)
-					.where(transaction.date.between(criteria.getStartDate(), criteria.getEndDate())
-							.and(product.id.eq(criteria.getProductId()))
-							.and(client.lastName.eq(criteria.getLastName())
-							.and(transaction.in(transactionsByTotalPrice)))
-					)
-					.groupBy(transaction.id)
-					.fetch();
+				.from(transaction)
+				.join(transaction.products,product)
+				.join(transaction.client, client)
+				.where(options)
+				.groupBy(transaction.id)
+				.fetch();
+		
+		
+//		List<TransactionEntity> transactions = queryFactory.select(transaction)
+//					.from(transaction)
+//					.join(transaction.products,product)
+//					.join(transaction.client, client)
+//					.where(transaction.date.between(criteria.getStartDate(), criteria.getEndDate())
+//							.and(product.id.eq(criteria.getProductId()))
+//							.and(client.lastName.eq(criteria.getLastName())
+//							.and(transaction.in(transactionsByTotalPrice)))
+//					)
+//					.groupBy(transaction.id)
+//					.fetch();
 		
 		return transactions;
 	}
