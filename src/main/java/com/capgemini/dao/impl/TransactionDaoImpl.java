@@ -39,8 +39,20 @@ public class TransactionDaoImpl extends AbstractDao<TransactionEntity, Long> imp
 
 	@Override
 	public BigDecimal findProfitByPeriod(Calendar startPeriod, Calendar endPeriod) {
-		// TODO Auto-generated method stub
-		return null;
+		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+		QTransactionEntity transaction = QTransactionEntity.transactionEntity;
+		QProductEntity product = QProductEntity.productEntity;
+		
+		BigDecimal profit = 
+				queryFactory.select(product.price.multiply(product.margin.divide(100)).sum())
+				.from(product)
+				.join(product.transactions,transaction)
+				.where(transaction.date.between(startPeriod, endPeriod))
+				.fetch()
+				.get(0)
+				;
+		
+		return profit;
 	}
 
 }

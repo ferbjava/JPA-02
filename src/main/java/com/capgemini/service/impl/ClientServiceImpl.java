@@ -1,6 +1,7 @@
 package com.capgemini.service.impl;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -112,8 +113,13 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public BigDecimal findProfitByPeriod(Calendar startPeriod, Calendar endPeriod) {
-		// TODO Auto-generated method stub
 		return transactionDao.findProfitByPeriod(startPeriod, endPeriod);
+	}
+
+	@Override
+	public List<ClientEntity> find3ClientsWithMostExpensiveShoppings(YearMonth startDate, YearMonth endDate) {
+		
+		return clientDao.find3ClientsWithMostExpensiveShoppings(startDate, endDate);
 	}
 
 	// private methods

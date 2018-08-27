@@ -12,6 +12,7 @@ import com.capgemini.domain.ProductEntity;
 import com.capgemini.mappers.ProductMapper;
 import com.capgemini.service.ProductService;
 import com.capgemini.types.ProductTO;
+import com.capgemini.types.SelectedProductTO;
 
 @Service
 @Transactional
@@ -47,6 +48,11 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<ProductTO> find10BestSellingProducts() {
 		return ProductMapper.map2TOs(productDao.find10BestSellingProducts());
+	}
+
+	@Override
+	public List<SelectedProductTO> findProductsInImplementation() {
+		return productDao.findProductsInImplementation();
 	}
 
 }

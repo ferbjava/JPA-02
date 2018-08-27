@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.capgemini.domain.ClientEntity;
 
 @Repository
-public interface ClientDao extends CrudRepository<ClientEntity, Long> {
+public interface ClientDao extends CrudRepository<ClientEntity, Long>, CustomClientDao {
 
 	ClientEntity findById(Long id);
 	

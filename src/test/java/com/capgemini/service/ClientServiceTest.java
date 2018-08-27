@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -17,6 +18,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capgemini.domain.ClientEntity;
 import com.capgemini.exceptions.HighPrizeException;
 import com.capgemini.exceptions.TransactionHistoryException;
 import com.capgemini.mappers.ProductMapper;
@@ -56,7 +58,7 @@ public class ClientServiceTest {
 		assertEquals(EXPECTED_FINAL_CLIENTS, finalClients);
 	}
 
-	@Test
+	@Test(expected = OptimisticLockingFailureException.class)
 	@Transactional
 	public void shouldFailOptimisticLocking() {
 		// given
@@ -80,11 +82,11 @@ public class ClientServiceTest {
 		long clientsAfterUpdate = clientService.findClientsNo();
 
 		boolean isException = false;
-		try {
+//		try {
 			clientService.save(selectedClient01_02);
-		} catch (OptimisticLockingFailureException ex) {
-			isException = true;
-		}
+//		} catch (OptimisticLockingFailureException ex) {
+//			isException = true;
+//		}
 
 		// then
 		assertEquals(EXPECTED_INITIAL_CLIENTS, initialClients);
@@ -141,14 +143,12 @@ public class ClientServiceTest {
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
 		ClientTO savedClient02 = clientService.save(data.getClientById(1));
 
-		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList))
-				.withStatus("Completed").build();
+		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
 
-		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient02.getId())
-				.withDate(new GregorianCalendar(2018, 7, 23)).withProductsIds(ProductMapper.map2TOsId(productsList))
-				.withStatus("Completed").build();
+		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 23))
+				.withProductsIds(ProductMapper.map2TOsId(productsList)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient02.getId(), transaction02);
 
 		long initalProductsNo = productService.findProductsNo();
@@ -199,24 +199,20 @@ public class ClientServiceTest {
 		productsList04.add(savedProduct02);
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
 
-		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList01))
-				.withStatus("Completed").build();
+		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
 
-		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList02))
-				.withStatus("Completed").build();
+		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
 
-		TransactionTO transaction03 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList03))
-				.withStatus("Completed").build();
+		TransactionTO transaction03 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
-		
-		TransactionTO transaction04 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList04))
-				.withStatus("Completed").build();
+
+		TransactionTO transaction04 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList04)).withStatus("Completed").build();
 
 		// when
 		boolean isException = false;
@@ -248,14 +244,14 @@ public class ClientServiceTest {
 		productsList02.add(savedProduct03);
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
 		
-		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+		TransactionTO transaction01 = new TransactionTOBuilder()
 				.withDate(new GregorianCalendar(2018, 7, 21)).withProductsIds(ProductMapper.map2TOsId(productsList01))
 				.withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
 
 		// when
 		boolean isException = false;
-		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient01.getId())
+		TransactionTO transaction02 = new TransactionTOBuilder()
 				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList02))
 				.withStatus("Completed").build();
 		try {
@@ -274,7 +270,8 @@ public class ClientServiceTest {
 		// given
 		TestData data = new TestData();
 		data.initialize();
-		BigDecimal EXPECTED_COST = new BigDecimal("2240.38");
+		
+		final BigDecimal EXPECTED_COST = new BigDecimal("2240.38");
 
 		ProductTO savedProduct01 = productService.save(data.getProductById(0));
 		ProductTO savedProduct02 = productService.save(data.getProductById(1));
@@ -288,19 +285,16 @@ public class ClientServiceTest {
 		productsList03.add(savedProduct01);
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
 
-		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList01))
-				.withStatus("Completed").build();
+		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
 
-		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList02))
-				.withStatus("Completed").build();
+		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
 
-		TransactionTO transaction03 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList03))
-				.withStatus("Completed").build();
+		TransactionTO transaction03 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
 
 		// when
@@ -316,12 +310,16 @@ public class ClientServiceTest {
 		// given
 		TestData data = new TestData();
 		data.initialize();
-		BigDecimal EXPECTED_COST = new BigDecimal("2240.38");
+		
+		final BigDecimal EXPECTED_PROFIT = new BigDecimal("277.49");
 
 		ProductTO savedProduct01 = productService.save(data.getProductById(0));
 		ProductTO savedProduct02 = productService.save(data.getProductById(1));
-		Calendar startPeriod = new GregorianCalendar(2018, 6, 1);
-		Calendar endPeriod = new GregorianCalendar(2018, 7, 1);
+		
+//		YearMonth startDate = YearMonth.of(2018, 1);
+		
+		Calendar startPeriod = new GregorianCalendar(2018, 2, 1);
+		Calendar endPeriod = new GregorianCalendar(2018, 11, 31);
 		
 		List<ProductTO> productsList01 = new ArrayList<>();
 		productsList01.add(savedProduct01);
@@ -329,29 +327,86 @@ public class ClientServiceTest {
 		List<ProductTO> productsList02 = new ArrayList<>();
 		productsList02.add(savedProduct01);
 		List<ProductTO> productsList03 = new ArrayList<>();
-		productsList03.add(savedProduct01);
+		productsList03.add(savedProduct02);
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
 
-		TransactionTO transaction01 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 0, 1)).withProductsIds(ProductMapper.map2TOsId(productsList01))
-				.withStatus("Completed").build();
+		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 0, 1))
+				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
 
-		TransactionTO transaction02 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 6, 12)).withProductsIds(ProductMapper.map2TOsId(productsList02))
-				.withStatus("Completed").build();
+		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 6, 12))
+				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
 
-		TransactionTO transaction03 = new TransactionTOBuilder().withClientId(savedClient01.getId())
-				.withDate(new GregorianCalendar(2018, 7, 29)).withProductsIds(ProductMapper.map2TOsId(productsList03))
-				.withStatus("Completed").build();
+		TransactionTO transaction03 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 29))
+				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
 
 		// when
-		BigDecimal cost = clientService.findProfitByPeriod(startPeriod, endPeriod);
+		BigDecimal profit = clientService.findProfitByPeriod(startPeriod, endPeriod);
 
 		// then
-		assertEquals(EXPECTED_COST, cost);
+		assertEquals(EXPECTED_PROFIT, profit);
+	}
+
+	@Test
+	@Transactional
+	public void should3ClientsWithMostExpensiveShoppings() throws Exception {
+		// given
+		TestData data = new TestData();
+		data.initialize();
+		
+		final int EXPECTED_CLIENTS_NO = 3;
+		final YearMonth START_DATE = YearMonth.of(2018, 6);
+		final YearMonth END_DATE = YearMonth.of(2018, 7);
+
+		ProductTO savedProduct01 = productService.save(data.getProductById(0));
+		ProductTO savedProduct02 = productService.save(data.getProductById(1));
+		ProductTO savedProduct03 = productService.save(data.getProductById(2));
+		ClientTO savedClient01 = clientService.save(data.getClientById(0));
+		ClientTO savedClient02 = clientService.save(data.getClientById(1));
+		ClientTO savedClient03 = clientService.save(data.getClientById(2));
+		ClientTO savedClient04 = clientService.save(data.getClientById(3));
+		
+		List<ProductTO> productsList01 = new ArrayList<>();
+		productsList01.add(savedProduct01);
+		productsList01.add(savedProduct02);
+		List<ProductTO> productsList02 = new ArrayList<>();
+		productsList02.add(savedProduct03);
+		List<ProductTO> productsList03 = new ArrayList<>();
+		productsList03.add(savedProduct01);
+		productsList03.add(savedProduct03);
+		List<ProductTO> productsList04 = new ArrayList<>();
+		productsList04.add(savedProduct01);
+		productsList04.add(savedProduct02);
+		List<ProductTO> productsList05 = new ArrayList<>();
+		productsList05.add(savedProduct01);
+
+		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 5, 1))
+				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
+
+		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 6, 12))
+				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
+
+		TransactionTO transaction03 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 29))
+				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient02.getId(), transaction03);
+
+		TransactionTO transaction04 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 0, 1))
+				.withProductsIds(ProductMapper.map2TOsId(productsList04)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient03.getId(), transaction04);
+
+		TransactionTO transaction05 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 0, 1))
+				.withProductsIds(ProductMapper.map2TOsId(productsList05)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient04.getId(), transaction05);
+
+		// when
+		List<ClientEntity> selectedClients = clientService.find3ClientsWithMostExpensiveShoppings(START_DATE, END_DATE);
+
+		// then
+		assertEquals(selectedClients.size(), EXPECTED_CLIENTS_NO);
 	}
 
 }

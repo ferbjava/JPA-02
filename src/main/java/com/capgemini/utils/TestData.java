@@ -16,7 +16,7 @@ import com.capgemini.types.ProductTO.ProductTOBuilder;
  * Provides following data:
  * <p>
  * <p>
- * - 3 ClientTO's (indexes 0-2),
+ * - 3 ClientTO's (indexes 0-3),
  * <p>
  * - 12 ProductTO's (indexes 0-12),
  * <p>
@@ -56,6 +56,9 @@ public class TestData {
 		this.clients.add(new ClientTOBuilder().withFirstName("Pankracy").withLastName("Wisniewski").withEmail("pankracy@gmail.com")
 				.withPhoneNumber(123456789).withAdress("Sosnowiec, ul. Ostatnia 913919 m. 13213123")
 				.withDateBirth(new GregorianCalendar(1980, 0, 1)).build());
+		this.clients.add(new ClientTOBuilder().withFirstName("Ryszard").withLastName("Ochodzki").withEmail("mis@gmail.com")
+				.withPhoneNumber(123456789).withAdress("Swornegacie, ul. Dluga 432 m. 12")
+				.withDateBirth(new GregorianCalendar(1985, 5, 3)).build());
 	}
 
 	private void fillProductsList() {
