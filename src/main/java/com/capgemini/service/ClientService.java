@@ -16,7 +16,7 @@ public interface ClientService {
 	ClientTO save(ClientTO clientTO);
 	ClientTO addTransactionToClient(Long clientId, TransactionTO transaction) throws Exception;
 	TransactionTO findTransactionById(Long id);
-	TransactionTO saveTransaction(Long clientId, TransactionTO transactionTO);
+	TransactionTO updateTransaction(Long clientId, TransactionTO transactionTO);
 	
 	long findClientsNo();
 	long findClientTransactionsNo(Long id);
@@ -25,7 +25,7 @@ public interface ClientService {
 	void removeClient(Long id);
 	
 	BigDecimal findProfitByPeriod(YearMonth startPeriod, YearMonth endPeriod);
-	BigDecimal findCostByClient(Long id);
+	BigDecimal findTotalCostByClient(Long id);
 	BigDecimal findCostByClientAndStatus(Long id, String status);
 	BigDecimal findTotalCostByStatus(String status);
 	

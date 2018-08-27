@@ -78,7 +78,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
-	public TransactionTO saveTransaction(Long clientId, TransactionTO transactionTO) {
+	public TransactionTO updateTransaction(Long clientId, TransactionTO transactionTO) {
 		TransactionEntity entity = TransactionMapper.toTransactionEntity(transactionTO);
 		ClientEntity clientEntity = clientDao.findById(clientId);
 		entity.setClient(clientEntity);
@@ -123,39 +123,98 @@ public class ClientServiceImpl implements ClientService {
 	public long findTransactionsNo() {
 		return transactionDao.count();
 	}
-
+	
+	/**
+	 * Find value of the all transactions for the selected client
+	 * 
+	 * @param id id number of the selected client
+	 * @return value of the all transactions for selected client
+	 */
 	@Override
-	public BigDecimal findCostByClient(Long id) {
-		return transactionDao.findCostByClient(id);
+	public BigDecimal findTotalCostByClient(Long id) {
+		return transactionDao.findTotalCostByClient(id);
 	}
-
+	
+	/**
+	 * Find profit from the all transactions in selected period of time
+	 * 
+	 * @param startPeriod
+	 *            beginning of the selected period of time (year and month)
+	 * @param endPeriod
+	 *            end of the selected period of time (year and month)
+	 * @return value of the profit based on unit price and margin for all products
+	 */
 	@Override
 	public BigDecimal findProfitByPeriod(YearMonth startPeriod, YearMonth endPeriod) {
 		return transactionDao.findProfitByPeriod(startPeriod, endPeriod);
 	}
-
+	
+	/**
+	 * Find 3 clients with the highest value of all theirs transactions in
+	 * selected period of time
+	 * 
+	 * @param startDate
+	 *            beginning of the selected period of time (year and month)
+	 * @param endDate
+	 *            end of the selected period of time (year and month)
+	 * @return list of the 3 client in order of the vale of theirs transactions
+	 */
 	@Override
 	public List<ClientEntity> find3ClientsWithMostExpensiveShoppings(YearMonth startDate, YearMonth endDate) {
 		return clientDao.find3ClientsWithMostExpensiveShoppings(startDate, endDate);
 	}
-
+	
+	/**
+	 * Find total cost of all transaction with gives status for selected client
+	 * @param id of the selected client
+	 * @param status status name which is the filter during searching
+	 * @return value of transactions which meet the condition
+	 */
 	@Override
 	public BigDecimal findCostByClientAndStatus(Long id, String status) {
 		return transactionDao.findCostByClientAndStatus(id, status);
 	}
-
+	
+	/**
+	 * Find total cost of all transaction with gives status
+	 * @param status status name which is the filter during searching
+	 * @return value of transactions which meet the condition
+	 */
 	@Override
 	public BigDecimal findTotalCostByStatus(String status) {
 		return transactionDao.findTotalCostByStatus(status);
 	}
-
+	
+	/**
+	 * Find list transactions with following criteria:
+	 * <p> - transaction belong to selected client
+	 * <p> - transaction contains selected product
+	 * <p> - transaction was done in selected period of time
+	 * <p> - total cost of transaction is in selected range
+	 * <p> - not all criteria should be defined
+	 * @param criteria 
+	 * @return list of transactions which meet the criteria or emty list if all criteria are null
+	 * 
+	 */
 	@Override
 	public List<TransactionEntity> findTransactionsByCriteria(TransactionSearchCriteriaTO criteria) {
 		return transactionDao.findByCriteria(criteria);
 	}
 
 	// private methods
-	private void verifyTransaction(Long clientId, TransactionTO transaction) throws TransactionHistoryException, HighPrizeException {
+	/**
+	 * Verify if client wants to buy products with total price over 5000 zl
+	 * having below 3 transactions, and transaction contains 5 products with
+	 * unit price over 7000 zl
+	 * 
+	 * @param clientId
+	 * @param transaction
+	 *            transactions which should be verified
+	 * @throws TransactionHistoryException
+	 * @throws HighPrizeException
+	 */
+	private void verifyTransaction(Long clientId, TransactionTO transaction)
+			throws TransactionHistoryException, HighPrizeException {
 		if (verifyIfBelow3Transactions(clientId, transaction)) {
 			throw new TransactionHistoryException();
 		}
@@ -163,7 +222,15 @@ public class ClientServiceImpl implements ClientService {
 			throw new HighPrizeException();
 		}
 	}
-
+	
+	/**
+	 * Verify if client wants to buy products with total price over 5000 zl
+	 * having below 3 transactions, and transaction contains 5 products with unit price over 7000 zl
+	 * 
+	 * @param transaction
+	 *            which should be verified
+	 * @return false if transaction is correct
+	 */
 	private boolean verifyIfBelow3Transactions(Long clientId, TransactionTO transaction) {
 		List<Long> productList = transaction.getProductsId();
 		BigDecimal totalPrize = new BigDecimal("0.0");
@@ -176,7 +243,14 @@ public class ClientServiceImpl implements ClientService {
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Verify if transaction contains 5 products with unit price over 7000 zl
+	 * 
+	 * @param transaction
+	 *            which should be verified
+	 * @return false if transaction is correct
+	 */
 	private boolean verifyIfOver5ExpensiveItems(TransactionTO transaction) {
 		List<Long> productsList = transaction.getProductsId();
 		Set<Long> productsSet = productsList.stream().collect(Collectors.toSet());
@@ -189,6 +263,14 @@ public class ClientServiceImpl implements ClientService {
 		return false;
 	}
 
+	/**
+	 * Separate oversized transaction (total weight of all products > 25 kg)
+	 * into suitable number of smaller packages
+	 * 
+	 * @param transaction
+	 *            which should be verified by weight of products
+	 * @return list of transactions with right weight
+	 */
 	private List<TransactionTO> verifyWeigth(TransactionTO transaction) {
 		List<Long> productsId = transaction.getProductsId();
 		List<TransactionTO> verifiedTransactions = new ArrayList<>();

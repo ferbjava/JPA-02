@@ -44,12 +44,20 @@ public class ProductServiceImpl implements ProductService {
 	public long findProductsNo() {
 		return productDao.count();
 	}
-
+	
+	/**
+	 * Find 10 best selling products 
+	 * @return list of 10 best selling products
+	 */
 	@Override
 	public List<ProductTO> find10BestSellingProducts() {
 		return ProductMapper.map2TOs(productDao.find10BestSellingProducts());
 	}
-
+	
+	/**
+	 * Find products from transactions in implementation 
+	 * @return list of products names and number of each item which belong to transaction in implementation
+	 */
 	@Override
 	public List<SelectedProductTO> findProductsInImplementation() {
 		return productDao.findProductsInImplementation();

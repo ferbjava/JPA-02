@@ -11,7 +11,7 @@ public interface CustomTransactionDao {
 	
 	List<TransactionEntity> findByCriteria(TransactionSearchCriteriaTO criteria);
 
-	BigDecimal findCostByClient(Long id);
+	BigDecimal findTotalCostByClient(Long id);
 	BigDecimal findCostByClientAndStatus(Long id, String status);
 	BigDecimal findTotalCostByStatus(String status);
 	BigDecimal findProfitByPeriod(YearMonth startPeriod, YearMonth endPeriod);

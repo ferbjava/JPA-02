@@ -12,8 +12,4 @@ public class HighPrizeException extends Exception {
 		super("It's forbidden to buy over 5 items with unit prize over 7000 zl");
 	}
 	
-	public HighPrizeException (Long no){
-		super("It's forbidden to buy "+no.toString()+" items with unit prize over 7000 zl");
-	}
-	
 }

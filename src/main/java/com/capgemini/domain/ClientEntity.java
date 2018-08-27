@@ -45,18 +45,6 @@ public class ClientEntity extends AbstractEntity implements Serializable {
 	}
 	
 	public ClientEntity(Long id, String firstName, String lastName, String email, Integer phoneNumber, String adress,
-			Calendar dateBirth, List<TransactionEntity> transactions) {
-		super(id);
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.adress = adress;
-		this.dateBirth = dateBirth;
-		this.transactions = transactions;
-	}
-	
-	public ClientEntity(Long id, String firstName, String lastName, String email, Integer phoneNumber, String adress,
 			Calendar dateBirth) {
 		super(id);
 		this.firstName = firstName;

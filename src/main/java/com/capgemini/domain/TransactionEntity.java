@@ -44,14 +44,6 @@ public class TransactionEntity extends AbstractEntity implements Serializable {
 	public TransactionEntity() {
 	}
 
-	public TransactionEntity(Long id, ClientEntity client, Calendar date, String status, List<ProductEntity> products) {
-		super(id);
-		this.client = client;
-		this.date = date;
-		this.status = status;
-		this.products = products;
-	}
-
 	public TransactionEntity(Long id, Calendar date, String status) {
 		super(id);
 		this.date = date;

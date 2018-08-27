@@ -132,9 +132,9 @@ public class ClientServiceTest {
 		selectedTrasnaction01_01.setStatus("Completed");
 		selectedTrasnaction01_02.setStatus("Completed");
 
-		clientService.saveTransaction(savedClient01.getId(), selectedTrasnaction01_01);
+		clientService.updateTransaction(savedClient01.getId(), selectedTrasnaction01_01);
 		clientService.findClientTransactionsNo(savedClient01.getId());
-		clientService.saveTransaction(savedClient01.getId(), selectedTrasnaction01_02);
+		clientService.updateTransaction(savedClient01.getId(), selectedTrasnaction01_02);
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class ClientServiceTest {
 		assertEquals(EXPECTED_FINAL_TRANSACTIONS, finalTransactionsNo);
 	}
 
-	@Test
+	@Test(expected = HighPrizeException.class)
 	@Transactional
 	public void shouldPerformInvalidTransaction6ExpensiveItems() throws Exception {
 		// given
@@ -229,18 +229,11 @@ public class ClientServiceTest {
 				.withProductsIds(ProductMapper.map2TOsId(productsList04)).withStatus("Completed").build();
 
 		// when
-		boolean isException = false;
-		try {
-			clientService.addTransactionToClient(savedClient01.getId(), transaction04);
-		} catch (HighPrizeException ex) {
-			isException = true;
-		}
-
-		// then
-		assertTrue(isException);
+		clientService.addTransactionToClient(savedClient01.getId(), transaction04);
+			
 	}
 
-	@Test
+	@Test(expected = TransactionHistoryException.class)
 	@Transactional
 	public void shouldPerformInvalidTransactionSecondPurchaseExpensive() throws Exception {
 		// given
@@ -264,18 +257,12 @@ public class ClientServiceTest {
 		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
 
 		// when
-		boolean isException = false;
 		TransactionTO transaction02 = new TransactionTOBuilder()
 				.withDate(new GregorianCalendar(2018, 7, 22)).withProductsIds(ProductMapper.map2TOsId(productsList02))
 				.withStatus("Completed").build();
-		try {
-			clientService.addTransactionToClient(savedClient01.getId(), transaction02);
-		} catch (TransactionHistoryException ex) {
-			isException = true;
-		}
-
-		// then
-		assertTrue(isException);
+		
+		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
+		
 	}
 
 	@Test
@@ -320,7 +307,7 @@ public class ClientServiceTest {
 		clientService.addTransactionToClient(savedClient02.getId(), transaction04);
 
 		// when
-		BigDecimal cost = clientService.findCostByClient(savedClient01.getId());
+		BigDecimal cost = clientService.findTotalCostByClient(savedClient01.getId());
 
 		// then
 		assertEquals(EXPECTED_COST, cost);

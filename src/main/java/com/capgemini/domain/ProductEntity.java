@@ -39,15 +39,6 @@ public class ProductEntity extends AbstractEntity implements Serializable {
 	public ProductEntity() {
 	}
 
-	public ProductEntity(Long id, String name, BigDecimal price, Integer margin, BigDecimal weigth, List<TransactionEntity> transactions) {
-		super(id);
-		this.name = name;
-		this.price = price;
-		this.margin = margin;
-		this.weigth = weigth;
-		this.transactions = transactions;
-	}
-
 	public ProductEntity(Long id, String name, BigDecimal price, Integer margin, BigDecimal weigth) {
 		super(id);
 		this.name = name;

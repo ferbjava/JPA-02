@@ -1,7 +1,5 @@
 package com.capgemini.exceptions;
 
-import java.math.BigDecimal;
-
 //public class TransactionHistoryException extends RuntimeException {
 public class TransactionHistoryException extends Exception {
 
@@ -12,10 +10,6 @@ public class TransactionHistoryException extends Exception {
 
 	public TransactionHistoryException (){
 		super("It's forbidden to perform purchase on over 5000 zl having less then 3 transactions");
-	}
-
-	public TransactionHistoryException (BigDecimal prize){
-		super("It's forbidden to perform purchase on "+prize.toString()+"zl having less then 3 transactions");
 	}
 	
 }

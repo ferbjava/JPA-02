@@ -67,24 +67,11 @@ public class TransactionDaoImpl extends AbstractDao<TransactionEntity, Long> imp
 				.groupBy(transaction.id)
 				.fetch();
 		
-		
-//		List<TransactionEntity> transactions = queryFactory.select(transaction)
-//					.from(transaction)
-//					.join(transaction.products,product)
-//					.join(transaction.client, client)
-//					.where(transaction.date.between(criteria.getStartDate(), criteria.getEndDate())
-//							.and(product.id.eq(criteria.getProductId()))
-//							.and(client.lastName.eq(criteria.getLastName())
-//							.and(transaction.in(transactionsByTotalPrice)))
-//					)
-//					.groupBy(transaction.id)
-//					.fetch();
-		
 		return transactions;
 	}
-
+	
 	@Override
-	public BigDecimal findCostByClient(Long id) {
+	public BigDecimal findTotalCostByClient(Long id) {
 		JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 		QTransactionEntity transaction = QTransactionEntity.transactionEntity;
 		QProductEntity product = QProductEntity.productEntity;
