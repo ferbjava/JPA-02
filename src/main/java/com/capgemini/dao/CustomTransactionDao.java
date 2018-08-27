@@ -1,7 +1,7 @@
 package com.capgemini.dao;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
+import java.time.YearMonth;
 import java.util.List;
 
 import com.capgemini.domain.TransactionEntity;
@@ -11,7 +11,9 @@ public interface CustomTransactionDao {
 	
 	List<TransactionEntity> findByCriteria(TransactionSearchCriteriaTO criteria);
 
-	BigDecimal findTransactionsCostByClient(Long id);
-	BigDecimal findProfitByPeriod(Calendar startPeriod, Calendar endPeriod);
+	BigDecimal findCostByClient(Long id);
+	BigDecimal findCostByClientAndStatus(Long id, String status);
+	BigDecimal findTotalCostByStatus(String status);
+	BigDecimal findProfitByPeriod(YearMonth startPeriod, YearMonth endPeriod);
 	
 }

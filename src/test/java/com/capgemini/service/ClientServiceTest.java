@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -306,7 +305,105 @@ public class ClientServiceTest {
 		clientService.addTransactionToClient(savedClient02.getId(), transaction04);
 
 		// when
-		BigDecimal cost = clientService.findCostOfTransactionsByClient(savedClient01.getId());
+		BigDecimal cost = clientService.findCostByClient(savedClient01.getId());
+
+		// then
+		assertEquals(EXPECTED_COST, cost);
+	}
+
+	@Test
+	@Transactional
+	public void shouldReturnClientCostWithGivenStatus() throws Exception {
+		// given
+		TestData data = new TestData();
+		data.initialize();
+		
+		final BigDecimal EXPECTED_COST = new BigDecimal("1789.88");
+		final String EXPECTED_STATUS = "In delivery";
+
+		ProductTO savedProduct01 = productService.save(data.getProductById(0));
+		ProductTO savedProduct02 = productService.save(data.getProductById(1));
+		
+		List<ProductTO> productsList01 = new ArrayList<>();
+		productsList01.add(savedProduct01);
+		productsList01.add(savedProduct02);
+		List<ProductTO> productsList02 = new ArrayList<>();
+		productsList02.add(savedProduct01);
+		List<ProductTO> productsList03 = new ArrayList<>();
+		productsList03.add(savedProduct01);
+		List<ProductTO> productsList04 = new ArrayList<>();
+		productsList04.add(savedProduct01);
+		
+		ClientTO savedClient01 = clientService.save(data.getClientById(0));
+		ClientTO savedClient02 = clientService.save(data.getClientById(1));
+
+		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus(EXPECTED_STATUS).build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
+
+		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus(EXPECTED_STATUS).build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
+
+		TransactionTO transaction03 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
+
+		TransactionTO transaction04 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList04)).withStatus(EXPECTED_STATUS).build();
+		clientService.addTransactionToClient(savedClient02.getId(), transaction04);
+
+		// when
+		BigDecimal cost = clientService.findCostByClientAndStatus(savedClient01.getId(), EXPECTED_STATUS);
+
+		// then
+		assertEquals(EXPECTED_COST, cost);
+	}
+
+	@Test
+	@Transactional
+	public void shouldReturnTotalCostWithGivenStatus() throws Exception {
+		// given
+		TestData data = new TestData();
+		data.initialize();
+
+		final BigDecimal EXPECTED_COST = new BigDecimal("2240.38");
+		final String EXPECTED_STATUS = "In delivery";
+
+		ProductTO savedProduct01 = productService.save(data.getProductById(0));
+		ProductTO savedProduct02 = productService.save(data.getProductById(1));
+
+		List<ProductTO> productsList01 = new ArrayList<>();
+		productsList01.add(savedProduct01);
+		productsList01.add(savedProduct02);
+		List<ProductTO> productsList02 = new ArrayList<>();
+		productsList02.add(savedProduct01);
+		List<ProductTO> productsList03 = new ArrayList<>();
+		productsList03.add(savedProduct01);
+		List<ProductTO> productsList04 = new ArrayList<>();
+		productsList04.add(savedProduct01);
+
+		ClientTO savedClient01 = clientService.save(data.getClientById(0));
+		ClientTO savedClient02 = clientService.save(data.getClientById(1));
+
+		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus(EXPECTED_STATUS).build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction01);
+
+		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus(EXPECTED_STATUS).build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction02);
+
+		TransactionTO transaction03 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList03)).withStatus("Completed").build();
+		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
+
+		TransactionTO transaction04 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 22))
+				.withProductsIds(ProductMapper.map2TOsId(productsList04)).withStatus(EXPECTED_STATUS).build();
+		clientService.addTransactionToClient(savedClient02.getId(), transaction04);
+
+		// when
+		BigDecimal cost = clientService.findTotalCostByStatus(EXPECTED_STATUS);
 
 		// then
 		assertEquals(EXPECTED_COST, cost);
@@ -324,10 +421,8 @@ public class ClientServiceTest {
 		ProductTO savedProduct01 = productService.save(data.getProductById(0));
 		ProductTO savedProduct02 = productService.save(data.getProductById(1));
 		
-//		YearMonth startDate = YearMonth.of(2018, 1);
-		
-		Calendar startPeriod = new GregorianCalendar(2018, 2, 1);
-		Calendar endPeriod = new GregorianCalendar(2018, 11, 31);
+		YearMonth startDate = YearMonth.of(2018, 3);
+		YearMonth endDate = YearMonth.of(2018, 12);
 		
 		List<ProductTO> productsList01 = new ArrayList<>();
 		productsList01.add(savedProduct01);
@@ -351,7 +446,7 @@ public class ClientServiceTest {
 		clientService.addTransactionToClient(savedClient01.getId(), transaction03);
 
 		// when
-		BigDecimal profit = clientService.findProfitByPeriod(startPeriod, endPeriod);
+		BigDecimal profit = clientService.findProfitByPeriod(startDate, endDate);
 
 		// then
 		assertEquals(EXPECTED_PROFIT, profit);

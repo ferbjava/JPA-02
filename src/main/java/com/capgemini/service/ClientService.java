@@ -2,7 +2,6 @@ package com.capgemini.service;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
-import java.util.Calendar;
 import java.util.List;
 
 import com.capgemini.domain.ClientEntity;
@@ -20,8 +19,12 @@ public interface ClientService {
 	long findTransactionsNo();
 	
 	void removeClient(Long id);
-	BigDecimal findCostOfTransactionsByClient(Long id);
-	BigDecimal findProfitByPeriod(Calendar startPeriod, Calendar endPeriod);
+	
+	BigDecimal findProfitByPeriod(YearMonth startPeriod, YearMonth endPeriod);
+	BigDecimal findCostByClient(Long id);
+	BigDecimal findCostByClientAndStatus(Long id, String status);
+	BigDecimal findTotalCostByStatus(String status);
+	
 	List<ClientEntity> find3ClientsWithMostExpensiveShoppings(YearMonth startDate, YearMonth endDate);
 	
 }

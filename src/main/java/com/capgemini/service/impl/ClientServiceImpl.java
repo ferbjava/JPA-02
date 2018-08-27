@@ -3,7 +3,6 @@ package com.capgemini.service.impl;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -107,18 +106,28 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
-	public BigDecimal findCostOfTransactionsByClient(Long id) {
-		return transactionDao.findTransactionsCostByClient(id);
+	public BigDecimal findCostByClient(Long id) {
+		return transactionDao.findCostByClient(id);
 	}
 
 	@Override
-	public BigDecimal findProfitByPeriod(Calendar startPeriod, Calendar endPeriod) {
+	public BigDecimal findProfitByPeriod(YearMonth startPeriod, YearMonth endPeriod) {
 		return transactionDao.findProfitByPeriod(startPeriod, endPeriod);
 	}
 
 	@Override
 	public List<ClientEntity> find3ClientsWithMostExpensiveShoppings(YearMonth startDate, YearMonth endDate) {
 		return clientDao.find3ClientsWithMostExpensiveShoppings(startDate, endDate);
+	}
+
+	@Override
+	public BigDecimal findCostByClientAndStatus(Long id, String status) {
+		return transactionDao.findCostByClientAndStatus(id, status);
+	}
+
+	@Override
+	public BigDecimal findTotalCostByStatus(String status) {
+		return transactionDao.findTotalCostByStatus(status);
 	}
 
 	// private methods
