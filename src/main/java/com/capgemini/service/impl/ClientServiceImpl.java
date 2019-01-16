@@ -32,7 +32,7 @@ import com.capgemini.types.TransactionTO;
 import com.capgemini.types.TransactionTO.TransactionTOBuilder;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ClientServiceImpl implements ClientService {
 
 	private static final BigDecimal MAX_PRIZE_FOR_EXPENSIVE_PRODUCTS = new BigDecimal("7000.00");
@@ -57,6 +57,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public ClientTO save(ClientTO clientTO) {
 		ClientEntity entity = ClientMapper.toClientEntity(clientTO);
 		for (Long i : clientTO.getTransactionsId()) {
@@ -78,6 +79,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public TransactionTO updateTransaction(Long clientId, TransactionTO transactionTO) {
 		TransactionEntity entity = TransactionMapper.toTransactionEntity(transactionTO);
 		ClientEntity clientEntity = clientDao.findById(clientId);
@@ -90,6 +92,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public ClientTO addTransactionToClient(Long clientId, TransactionTO transaction) throws TransactionHistoryException, HighPrizeException {
 		verifyTransaction(clientId, transaction);
 		List<TransactionTO> transactions = verifyWeigth(transaction);
@@ -115,6 +118,7 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public void removeClient(Long id) {
 		clientDao.delete(id);
 	}

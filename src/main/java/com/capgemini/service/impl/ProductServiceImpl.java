@@ -15,7 +15,7 @@ import com.capgemini.types.ProductTO;
 import com.capgemini.types.SelectedProductTO;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
@@ -31,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public ProductTO save(ProductTO productTO) {
 		ProductEntity entity = ProductMapper.toProductEntity(productTO);
 		for (Long i : productTO.getTransactionsId()) {

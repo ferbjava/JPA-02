@@ -25,7 +25,7 @@ import com.capgemini.utils.TestData;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest (properties = "spring.profiles.active=hsql")
 public class ProductServiceTest {
 
 	@Autowired
@@ -81,12 +81,6 @@ public class ProductServiceTest {
 		TestData data = new TestData();
 		data.initialize();
 		final int EXPECTED_RETURN_PRODUCTS = 10;
-		final Long EXPECTED_1_BESTSELLER_ID = new Long(1);
-		final Long EXPECTED_2_BESTSELLER_ID = new Long(2);
-		final Long EXPECTED_3_BESTSELLER_ID = new Long(3);
-		final Long EXPECTED_4_BESTSELLER_ID = new Long(9);
-		final Long EXPECTED_5_BESTSELLER_ID = new Long(5);
-		final Long EXPECTED_6_BESTSELLER_ID = new Long(6);
 		
 		ClientTO savedClient01 = clientService.save(data.getClientById(0));
 		clientService.save(data.getClientById(1));
@@ -103,6 +97,13 @@ public class ProductServiceTest {
 		ProductTO savedProduct10 = productService.save(data.getProductById(9));
 		ProductTO savedProduct11 = productService.save(data.getProductById(10));
 		productService.save(data.getProductById(11));
+		
+		final Long EXPECTED_1_BESTSELLER_ID = savedProduct01.getId();
+		final Long EXPECTED_2_BESTSELLER_ID = savedProduct02.getId();
+		final Long EXPECTED_3_BESTSELLER_ID = savedProduct03.getId();
+		final Long EXPECTED_4_BESTSELLER_ID = savedProduct09.getId();
+		final Long EXPECTED_5_BESTSELLER_ID = savedProduct05.getId();
+		final Long EXPECTED_6_BESTSELLER_ID = savedProduct06.getId();
 		
 		List<ProductTO> productsList01 = new ArrayList<>();
 		productsList01.add(savedProduct01);

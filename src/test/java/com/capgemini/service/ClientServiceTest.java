@@ -31,7 +31,7 @@ import com.capgemini.types.TransactionTO.TransactionTOBuilder;
 import com.capgemini.utils.TestData;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest (properties = "spring.profiles.active=hsql")
 public class ClientServiceTest {
 
 	@Autowired
@@ -123,11 +123,11 @@ public class ClientServiceTest {
 		
 		TransactionTO transaction = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 23))
 				.withProductsIds(ProductMapper.map2TOsId(productsList)).withStatus("Completed").build();
-		clientService.addTransactionToClient(savedClient01.getId(), transaction);
+		ClientTO updatedClient01 = clientService.addTransactionToClient(savedClient01.getId(), transaction);
 
 		// when
-		TransactionTO selectedTrasnaction01_01 = clientService.findTransactionById(new Long(1));
-		TransactionTO selectedTrasnaction01_02 = clientService.findTransactionById(new Long(1));
+		TransactionTO selectedTrasnaction01_01 = clientService.findTransactionById(updatedClient01.getTransactionsId().get(0));
+		TransactionTO selectedTrasnaction01_02 = clientService.findTransactionById(updatedClient01.getTransactionsId().get(0));
 		
 		selectedTrasnaction01_01.setStatus("Completed");
 		selectedTrasnaction01_02.setStatus("Completed");
@@ -463,9 +463,6 @@ public class ClientServiceTest {
 		
 		final YearMonth START_DATE = YearMonth.of(2018, 6);
 		final YearMonth END_DATE = YearMonth.of(2018, 8);
-		final Long EXPECTED_01_CLIENT_ID = new Long(1);
-		final Long EXPECTED_02_CLIENT_ID = new Long(3);
-		final Long EXPECTED_03_CLIENT_ID = new Long(2);
 
 		ProductTO savedProduct01 = productService.save(data.getProductById(0));
 		ProductTO savedProduct02 = productService.save(data.getProductById(1));
@@ -474,6 +471,10 @@ public class ClientServiceTest {
 		ClientTO savedClient02 = clientService.save(data.getClientById(1));
 		ClientTO savedClient03 = clientService.save(data.getClientById(2));
 		ClientTO savedClient04 = clientService.save(data.getClientById(3));
+
+		final Long EXPECTED_01_CLIENT_ID = savedClient01.getId();
+		final Long EXPECTED_02_CLIENT_ID = savedClient03.getId();
+		final Long EXPECTED_03_CLIENT_ID = savedClient02.getId();
 		
 		List<ProductTO> productsList01 = new ArrayList<>();
 		productsList01.add(savedProduct01);
@@ -528,8 +529,6 @@ public class ClientServiceTest {
 		
 		final Calendar START_DATE = new GregorianCalendar(2018, 5, 1);
 		final Calendar END_DATE = new GregorianCalendar(2018, 7, 31);
-		final Long EXPECTED_01_TRANSACTION_ID = new Long(2);
-		final Long EXPECTED_02_TRANSACTION_ID = new Long(3);
 		final BigDecimal LOWER_COST = new BigDecimal("200.0");
 		final BigDecimal UPPER_COST = new BigDecimal("10000.0");
 
@@ -564,7 +563,7 @@ public class ClientServiceTest {
 
 		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 5, 1))
 				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus("Completed").build();
-		clientService.addTransactionToClient(savedClient02.getId(), transaction01);
+		ClientTO updatedClient02 = clientService.addTransactionToClient(savedClient02.getId(), transaction01);
 
 		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 6, 12))
 				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus("Completed").build();
@@ -585,6 +584,9 @@ public class ClientServiceTest {
 		TransactionTO transaction06 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 1))
 				.withProductsIds(ProductMapper.map2TOsId(productsList06)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction06);
+		
+		final Long EXPECTED_01_TRANSACTION_ID = updatedClient02.getTransactionsId().get(0) + 1L;
+		final Long EXPECTED_02_TRANSACTION_ID = updatedClient02.getTransactionsId().get(0) + 2L;
 
 		// when
 		List<TransactionEntity> selectedTransactions = clientService.findTransactionsByCriteria(criteria);
@@ -604,10 +606,6 @@ public class ClientServiceTest {
 		
 		final Calendar START_DATE = new GregorianCalendar(2018, 5, 1);
 		final Calendar END_DATE = new GregorianCalendar(2018, 7, 31);
-		final Long EXPECTED_01_TRANSACTION_ID = new Long(2);
-		final Long EXPECTED_02_TRANSACTION_ID = new Long(3);
-		final Long EXPECTED_03_TRANSACTION_ID = new Long(5);
-		final Long EXPECTED_04_TRANSACTION_ID = new Long(6);
 		final BigDecimal LOWER_COST = new BigDecimal("200.0");
 		final BigDecimal UPPER_COST = new BigDecimal("10000.0");
 
@@ -642,7 +640,7 @@ public class ClientServiceTest {
 
 		TransactionTO transaction01 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 5, 1))
 				.withProductsIds(ProductMapper.map2TOsId(productsList01)).withStatus("Completed").build();
-		clientService.addTransactionToClient(savedClient02.getId(), transaction01);
+		ClientTO updatedClient02 = clientService.addTransactionToClient(savedClient02.getId(), transaction01);
 
 		TransactionTO transaction02 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 6, 12))
 				.withProductsIds(ProductMapper.map2TOsId(productsList02)).withStatus("Completed").build();
@@ -663,6 +661,11 @@ public class ClientServiceTest {
 		TransactionTO transaction06 = new TransactionTOBuilder().withDate(new GregorianCalendar(2018, 7, 1))
 				.withProductsIds(ProductMapper.map2TOsId(productsList06)).withStatus("Completed").build();
 		clientService.addTransactionToClient(savedClient01.getId(), transaction06);
+		
+		final Long EXPECTED_01_TRANSACTION_ID = updatedClient02.getTransactionsId().get(0) + 1L;
+		final Long EXPECTED_02_TRANSACTION_ID = updatedClient02.getTransactionsId().get(0) + 2L;
+		final Long EXPECTED_03_TRANSACTION_ID = updatedClient02.getTransactionsId().get(0) + 4L;
+		final Long EXPECTED_04_TRANSACTION_ID = updatedClient02.getTransactionsId().get(0) + 5L;
 
 		// when
 		List<TransactionEntity> selectedTransactions = clientService.findTransactionsByCriteria(criteria);
